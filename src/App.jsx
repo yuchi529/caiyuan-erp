@@ -853,7 +853,7 @@ function ErpApp() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed sm:static inset-y-0 left-0 z-40 w-60 shrink-0 bg-[#111f47] flex flex-col transform transition-transform duration-300 ease-in-out sm:translate-x-0 ${
+        className={`fixed sm:static inset-y-0 left-0 z-40 w-60 shrink-0 bg-[#8FABD4] flex flex-col transform transition-transform duration-300 ease-in-out sm:translate-x-0 ${
           navOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
