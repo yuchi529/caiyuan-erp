@@ -5,7 +5,7 @@ import {
   AlertTriangle, Plus, X, Trash2, Pencil, Search, Gauge, ChevronRight,
   Building2, TrendingUp, TrendingDown, Clock, CheckCircle2, ArrowUpRight, Menu, Receipt,
   Wallet, ArrowRightLeft, Banknote, Landmark, AlertCircle, CheckSquare, Square,
-  Upload, Download, FileWarning, FileCheck2, CreditCard, Minus, ShoppingBag, CloudOff, Cloud, UserCog
+  Upload, Download, FileWarning, FileCheck2, CreditCard, Minus, ShoppingBag, CloudOff, Cloud, UserCog, History
 } from "lucide-react";
 
 /* ---------------------------------- Supabase 連線設定 ----------------------------------
@@ -825,6 +825,7 @@ function ErpApp() {
     { key: "products", label: "商品庫存", icon: Package },
     { key: "sales", label: "銷售訂單", icon: ShoppingCart },
     { key: "pos", label: "銷售單", icon: CreditCard },
+    { key: "sales_history", label: "銷售紀錄", icon: History },
     { key: "purchase", label: "採購訂單", icon: Truck },
     { key: "lease", label: "租賃管理", icon: Printer },
     { key: "ar", label: "應收帳款", icon: Receipt },
@@ -939,6 +940,7 @@ function ErpApp() {
           {tab === "products" && <ProductsTab products={products} setProducts={setProducts} categories={categories} setCategories={setCategories} />}
           {tab === "sales" && <SalesTab salesOrders={salesOrders} setSalesOrders={setSalesOrders} customers={customers} products={products} custName={custName} prodName={prodName} addArRecord={addArRecord} />}
           {tab === "pos" && <PosTab posSales={posSales} setPosSales={setPosSales} customers={customers} products={products} setProducts={setProducts} custName={custName} prodName={prodName} />}
+          {tab === "sales_history" && <SalesHistoryTab salesOrders={salesOrders} posSales={posSales} customers={customers} custName={custName} prodName={prodName} />}
           {tab === "purchase" && <PurchaseTab purchaseOrders={purchaseOrders} setPurchaseOrders={setPurchaseOrders} products={products} setProducts={setProducts} prodName={prodName} />}
           {tab === "lease" && <LeaseTab leases={leases} setLeases={setLeases} customers={customers} custName={custName} addArRecord={addArRecord} />}
           {tab === "ar" && (
@@ -2162,6 +2164,142 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
           </table>
 
           <div className="text-center text-xs text-slate-400 mt-6">感謝您的惠顧 · 本單據為交易憑證</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------- 銷售紀錄（合併銷售訂單＋銷售單，可搜尋） ---------------------------------- */
+function SalesHistoryTab({ salesOrders, posSales, customers, custName, prodName }) {
+  const [q, setQ] = useState("");
+  const [type, setType] = useState("全部");
+  const [customerId, setCustomerId] = useState("全部");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+
+  const records = useMemo(() => {
+    const orders = salesOrders.map((o) => ({
+      key: `SO-${o.id}`,
+      type: "銷售訂單",
+      id: o.id,
+      date: o.date,
+      time: "",
+      customerId: o.customerId || null,
+      items: o.items,
+      total: o.items.reduce((a, i) => a + i.qty * i.price, 0),
+      statusOrPayment: o.status,
+    }));
+    const pos = posSales.map((s) => ({
+      key: `POS-${s.id}`,
+      type: "銷售單",
+      id: s.id,
+      date: s.date,
+      time: s.time || "",
+      customerId: s.customerId || null,
+      items: s.items,
+      total: s.total,
+      statusOrPayment: s.paymentMethod,
+    }));
+    return [...orders, ...pos].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : (b.time || "").localeCompare(a.time || "")));
+  }, [salesOrders, posSales]);
+
+  const filtered = records.filter((r) => {
+    if (type !== "全部" && r.type !== type) return false;
+    if (customerId !== "全部") {
+      if (customerId === "__walkin__") { if (r.customerId) return false; }
+      else if (r.customerId !== customerId) return false;
+    }
+    if (from && r.date < from) return false;
+    if (to && r.date > to) return false;
+    const kw = q.trim().toLowerCase();
+    if (kw) {
+      const haystack = [r.id, r.date, r.statusOrPayment, r.customerId ? custName(r.customerId) : "現場客戶", ...r.items.map((i) => prodName(i.productId))]
+        .join(" ")
+        .toLowerCase();
+      if (!haystack.includes(kw)) return false;
+    }
+    return true;
+  });
+
+  const totalAmount = filtered.reduce((a, r) => a + r.total, 0);
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 space-y-3">
+        <div className="relative">
+          <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋單號、客戶、商品或狀態／付款方式" className={inputCls + " pl-8"} />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div>
+            <div className="text-xs font-medium text-slate-500 mb-1">類型</div>
+            <select className={inputCls} value={type} onChange={(e) => setType(e.target.value)}>
+              <option>全部</option>
+              <option>銷售訂單</option>
+              <option>銷售單</option>
+            </select>
+          </div>
+          <div>
+            <div className="text-xs font-medium text-slate-500 mb-1">客戶</div>
+            <select className={inputCls} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
+              <option value="全部">全部</option>
+              <option value="__walkin__">現場客戶（無指定）</option>
+              {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <div className="text-xs font-medium text-slate-500 mb-1">起始日期</div>
+            <input type="date" className={inputCls} value={from} onChange={(e) => setFrom(e.target.value)} />
+          </div>
+          <div>
+            <div className="text-xs font-medium text-slate-500 mb-1">結束日期</div>
+            <input type="date" className={inputCls} value={to} onChange={(e) => setTo(e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
+        <div className="flex items-center justify-between p-4 border-b border-slate-100 flex-wrap gap-2">
+          <h3 className="text-sm text-slate-500">共 {filtered.length} 筆</h3>
+          <div className="text-sm font-semibold tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
+            合計：{fmt(totalAmount)}
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-slate-400 text-xs border-b border-slate-100">
+                <th className="px-4 py-2.5 font-medium">類型</th>
+                <th className="px-4 py-2.5 font-medium">單號</th>
+                <th className="px-4 py-2.5 font-medium">日期</th>
+                <th className="px-4 py-2.5 font-medium">客戶</th>
+                <th className="px-4 py-2.5 font-medium">品項</th>
+                <th className="px-4 py-2.5 font-medium">狀態／付款方式</th>
+                <th className="px-4 py-2.5 font-medium">金額</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-400">找不到符合條件的銷售紀錄</td></tr>
+              )}
+              {filtered.map((r) => (
+                <tr key={r.key} className="border-b border-slate-50 hover:bg-slate-50/60 align-top">
+                  <td className="px-4 py-2.5">
+                    <Badge tone={r.type === "銷售訂單" ? "slate" : "teal"}>{r.type}</Badge>
+                  </td>
+                  <td className="px-4 py-2.5 text-slate-400 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{r.id}</td>
+                  <td className="px-4 py-2.5">{r.date}{r.time ? ` ${r.time}` : ""}</td>
+                  <td className="px-4 py-2.5 font-medium text-slate-700">{r.customerId ? custName(r.customerId) : "現場客戶"}</td>
+                  <td className="px-4 py-2.5 text-slate-500 text-xs">
+                    {r.items.map((i, idx) => <div key={idx}>{prodName(i.productId)} × {i.qty}</div>)}
+                  </td>
+                  <td className="px-4 py-2.5 text-slate-600 text-xs">{r.statusOrPayment}</td>
+                  <td className="px-4 py-2.5 font-semibold tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(r.total)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
