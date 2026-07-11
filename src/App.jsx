@@ -2511,6 +2511,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
   const [meterModal, setMeterModal] = useState(null);
   const [meterVal, setMeterVal] = useState(0);
   const [invoiceModal, setInvoiceModal] = useState(null);
+  const [q, setQ] = useState("");
 
   const doPrint = (lease, meterOverride) => {
     const customer = customers.find((c) => c.id === lease.customerId);
@@ -2524,14 +2525,23 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
   };
 
   const groups = useMemo(() => {
+    const kw = q.trim().toLowerCase();
+    const filteredLeases = kw
+      ? leases.filter((l) =>
+          [custName(l.customerId), l.machineName, l.serial, l.machineType, l.status, l.id]
+            .join(" ")
+            .toLowerCase()
+            .includes(kw)
+        )
+      : leases;
     const order = [];
     const map = {};
-    leases.forEach((l) => {
+    filteredLeases.forEach((l) => {
       if (!map[l.customerId]) { map[l.customerId] = []; order.push(l.customerId); }
       map[l.customerId].push(l);
     });
     return order.map((customerId) => ({ customerId, items: map[customerId] }));
-  }, [leases]);
+  }, [leases, q, customers]);
 
   const openAdd = () => {
     setForm({
@@ -2579,12 +2589,24 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h3 className="text-sm text-slate-500">共 {leases.length} 台租賃機台 · 依張數（計數器）+ 月租金計費</h3>
-        <button onClick={() => { openAdd(); }} className="flex items-center gap-1.5 bg-slate-800 text-white text-sm px-3.5 py-2 rounded-lg hover:bg-slate-900">
-          <Plus size={15} /> 新增租賃合約
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="relative w-64">
+            <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋客戶、機型、序號或狀態" className={inputCls + " pl-8"} />
+          </div>
+          <button onClick={() => { openAdd(); }} className="flex items-center gap-1.5 bg-slate-800 text-white text-sm px-3.5 py-2 rounded-lg hover:bg-slate-900 shrink-0">
+            <Plus size={15} /> 新增租賃合約
+          </button>
+        </div>
       </div>
+
+      {groups.length === 0 && (
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm px-4 py-10 text-center text-sm text-slate-400">
+          找不到符合條件的租賃機台
+        </div>
+      )}
 
       <div className="space-y-6">
         {groups.map((g) => (
