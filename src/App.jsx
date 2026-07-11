@@ -1238,7 +1238,7 @@ function CustomersTab({ customers, setCustomers }) {
   const openAdd = () => { setForm({ name: "", taxId: "", contact: "", phone: "", address: "", type: "一般" }); setTaxIdError(""); setModal("add"); };
   const openEdit = (c) => { setForm(c); setTaxIdError(""); setModal("edit"); };
   const validateTaxId = (taxId, selfId) => {
-    if (!taxId) return "統一編號為必填";
+    if (!taxId) return ""; // 非必填，留空直接通過
     if (!/^\d{8}$/.test(taxId)) return "統一編號須為 8 碼數字";
     if (customers.some((c) => c.taxId === taxId && c.id !== selfId)) return "此統一編號已被其他客戶使用";
     return "";
@@ -1268,11 +1268,12 @@ function CustomersTab({ customers, setCustomers }) {
 
       const errors = [];
       if (!name) errors.push("缺少客戶名稱");
-      if (!taxId) errors.push("缺少統一編號");
-      else if (!/^\d{8}$/.test(taxId)) errors.push("統一編號須為 8 碼數字");
-      else if (customers.some((c) => c.taxId === taxId)) errors.push("統一編號與現有客戶重複");
-      else if (seenTaxIds.has(taxId)) errors.push("與檔案中其他列統一編號重複");
-      if (taxId) seenTaxIds.add(taxId);
+      if (taxId) {
+        if (!/^\d{8}$/.test(taxId)) errors.push("統一編號須為 8 碼數字");
+        else if (customers.some((c) => c.taxId === taxId)) errors.push("統一編號與現有客戶重複");
+        else if (seenTaxIds.has(taxId)) errors.push("與檔案中其他列統一編號重複");
+        seenTaxIds.add(taxId);
+      }
 
       return { name, taxId, contact, phone, address, type, errors, ok: errors.length === 0, include: errors.length === 0 };
     });
@@ -1341,13 +1342,13 @@ function CustomersTab({ customers, setCustomers }) {
       {modal && (
         <Modal title={modal === "add" ? "新增客戶" : "編輯客戶"} onClose={() => setModal(null)}>
           <Field label="客戶名稱"><input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
-          <Field label="統一編號">
+          <Field label="統一編號（選填）">
             <input
               className={inputCls + (taxIdError ? " border-rose-400 focus:ring-rose-300 focus:border-rose-400" : "")}
               maxLength={8}
               value={form.taxId || ""}
               onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 8); setForm({ ...form, taxId: v }); setTaxIdError(""); }}
-              placeholder="8 碼數字，例：12345678"
+              placeholder="8 碼數字，例：12345678（可留空）"
             />
             {taxIdError && <div className="text-xs text-rose-500 mt-1">{taxIdError}</div>}
           </Field>
@@ -1366,7 +1367,7 @@ function CustomersTab({ customers, setCustomers }) {
       {importOpen && (
         <CsvImportModal
           title="批次匯入客戶（CSV）"
-          hint={<>請使用 UTF-8 編碼的 CSV 檔案，欄位標題需包含：<b className="text-slate-700">客戶名稱、統一編號、聯絡人、電話、地址、類型</b>。「統一編號」須為 8 碼數字且不可與現有客戶或檔案內其他列重複。</>}
+          hint={<>請使用 UTF-8 編碼的 CSV 檔案，欄位標題需包含：<b className="text-slate-700">客戶名稱、統一編號、聯絡人、電話、地址、類型</b>。「統一編號」為選填，若有填寫則須為 8 碼數字且不可與現有客戶或檔案內其他列重複。</>}
           headers={CUSTOMER_CSV_HEADERS}
           sampleRows={[["彩苑範例股份有限公司", "00000000", "陳先生", "02-1234-5678", "台北市中山區範例路1號", "一般"]]}
           templateFileName="客戶匯入範本.csv"
