@@ -1393,6 +1393,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({});
   const [cat, setCat] = useState("全部");
+  const [q, setQ] = useState("");
   const [importOpen, setImportOpen] = useState(false);
   const [addingCat, setAddingCat] = useState(false);
   const [newCatName, setNewCatName] = useState("");
@@ -1438,7 +1439,13 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
   };
   const remove = (id) => setProducts(products.filter((p) => p.id !== id));
   const cats = ["全部", ...categories];
-  const filtered = cat === "全部" ? products : products.filter((p) => p.category === cat);
+  const filtered = products
+    .filter((p) => cat === "全部" || p.category === cat)
+    .filter((p) => {
+      const kw = q.trim().toLowerCase();
+      if (!kw) return true;
+      return [p.name, p.spec, p.category, p.id].some((v) => (v || "").toLowerCase().includes(kw));
+    });
 
   /* -------- 批次匯入（CSV 內出現的新分類會自動加入分類清單） -------- */
   const normalizeProductRows = (data) => {
@@ -1480,7 +1487,21 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
-      <div className="flex items-center justify-between p-4 border-b border-slate-100 flex-wrap gap-2">
+      <div className="p-4 border-b border-slate-100 space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="relative w-72">
+            <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋商品名稱、規格、分類或編號" className={inputCls + " pl-8"} />
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
+              <Upload size={15} /> 批次匯入
+            </button>
+            <button onClick={openAdd} className="flex items-center gap-1.5 bg-slate-800 text-white text-sm px-3.5 py-2 rounded-lg hover:bg-slate-900">
+              <Plus size={15} /> 新增商品
+            </button>
+          </div>
+        </div>
         <div className="flex items-center flex-wrap gap-1.5">
           {cats.map((c) => (
             <div key={c} className="group relative">
@@ -1516,14 +1537,6 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
               <Plus size={12} /> 新增分類
             </button>
           )}
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
-            <Upload size={15} /> 批次匯入
-          </button>
-          <button onClick={openAdd} className="flex items-center gap-1.5 bg-slate-800 text-white text-sm px-3.5 py-2 rounded-lg hover:bg-slate-900">
-            <Plus size={15} /> 新增商品
-          </button>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -1564,6 +1577,9 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
               </td>
             </tr>
           ))}
+          {filtered.length === 0 && (
+            <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-400">找不到符合條件的商品</td></tr>
+          )}
         </tbody>
       </table>
 </div>
