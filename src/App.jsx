@@ -858,7 +858,7 @@ function ErpApp() {
         }`}
       >
         <div className="px-5 py-6 border-b border-white/10 flex items-center gap-3">
-          <div className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0 p-1.5" style={{ backgroundColor: "#F6DCC5" }}>
+          <div className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0 p-1.5">
             <img src={LOGO_DATA_URI} alt="OK ink logo" className="w-full h-full object-contain" />
           </div>
           <div>
