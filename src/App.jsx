@@ -880,7 +880,7 @@ function ErpApp() {
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                 tab === n.key ? "font-medium" : "text-[#0A3981]/70 hover:bg-white/5 hover:text-[#0A3981]"
               }`}
-              style={tab === n.key ? { backgroundColor: "rgba(246,220,197,0.16)", color: "#EFECE3" } : undefined}
+              style={tab === n.key ? { backgroundColor: "rgba(246,220,197,0.16)", color: "#021526" } : undefined}
             >
               <n.icon size={16} />
               {n.label}
