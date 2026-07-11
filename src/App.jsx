@@ -551,7 +551,7 @@ const Modal = ({ title, onClose, children, wide }) => (
   <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div className={`bg-white rounded-xl shadow-2xl w-full ${wide ? "max-w-2xl" : "max-w-md"} overflow-y-auto`} style={{ maxHeight: "88vh" }}>
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-xl">
-        <h3 className="font-semibold text-[#1b2a5d]" style={{ fontFamily: "'Noto Sans TC', sans-serif" }}>{title}</h3>
+        <h3 className="font-semibold text-[#8FABD4]" style={{ fontFamily: "'Noto Sans TC', sans-serif" }}>{title}</h3>
         <button onClick={onClose} className="text-slate-400 hover:text-slate-700"><X size={18} /></button>
       </div>
       <div className="p-6">{children}</div>
@@ -566,7 +566,7 @@ const Field = ({ label, children }) => (
   </label>
 );
 
-const inputCls = "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1b2a5d]/30 focus:border-[#1b2a5d]";
+const inputCls = "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#8FABD4]/30 focus:border-[#8FABD4]";
 
 const StatCard = ({ icon: Icon, label, value, tone, sub }) => (
   <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
@@ -575,7 +575,7 @@ const StatCard = ({ icon: Icon, label, value, tone, sub }) => (
         <Icon size={17} className="text-white" />
       </div>
     </div>
-    <div className="text-2xl font-bold text-[#1b2a5d] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{value}</div>
+    <div className="text-2xl font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{value}</div>
     <div className="text-xs text-slate-500 mt-1">{label}</div>
     {sub && <div className="text-xs text-slate-400 mt-1">{sub}</div>}
   </div>
@@ -620,7 +620,7 @@ function LoginScreen() {
             <img src={LOGO_DATA_URI} alt="彩苑科技 logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <div className="font-bold text-sm text-[#1b2a5d]">彩苑科技有限公司</div>
+            <div className="font-bold text-sm text-[#8FABD4]">彩苑科技有限公司</div>
             <div className="text-xs text-slate-400">ERP 系統登入</div>
           </div>
         </div>
@@ -633,7 +633,7 @@ function LoginScreen() {
             <input type="password" required minLength={6} className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="至少 6 碼" />
           </Field>
           {err && <div className="text-xs text-rose-500">{err}</div>}
-          <button type="submit" disabled={busy} className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
+          <button type="submit" disabled={busy} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
             {busy ? "處理中…" : "登入"}
           </button>
         </form>
@@ -674,7 +674,7 @@ function ChangePasswordModal({ onClose }) {
       {ok ? (
         <div className="space-y-4">
           <p className="text-sm text-teal-600">密碼已變更成功。</p>
-          <button onClick={onClose} className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">關閉</button>
+          <button onClick={onClose} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">關閉</button>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-3">
@@ -687,7 +687,7 @@ function ChangePasswordModal({ onClose }) {
           {err && <div className="text-xs text-rose-500">{err}</div>}
           <div className="flex gap-2 pt-1">
             <button type="button" onClick={onClose} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
-            <button type="submit" disabled={busy} className="flex-1 bg-[#1b2a5d] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
+            <button type="submit" disabled={busy} className="flex-1 bg-[#8FABD4] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
               {busy ? "處理中…" : "確認變更"}
             </button>
           </div>
@@ -880,7 +880,7 @@ function ErpApp() {
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                 tab === n.key ? "font-medium" : "text-white/60 hover:bg-white/5 hover:text-white"
               }`}
-              style={tab === n.key ? { backgroundColor: "rgba(246,220,197,0.16)", color: "#F6DCC5" } : undefined}
+              style={tab === n.key ? { backgroundColor: "rgba(246,220,197,0.16)", color: "#EFECE3" } : undefined}
             >
               <n.icon size={16} />
               {n.label}
@@ -931,7 +931,7 @@ function ErpApp() {
             <button onClick={() => setNavOpen(true)} className="sm:hidden text-slate-500 shrink-0">
               <Menu size={22} />
             </button>
-            <h1 className="text-lg font-bold text-[#1b2a5d] truncate">{navItems.find((n) => n.key === tab)?.label}</h1>
+            <h1 className="text-lg font-bold text-[#8FABD4] truncate">{navItems.find((n) => n.key === tab)?.label}</h1>
           </div>
           <div className="text-xs text-slate-400 tabular-nums shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{todayStr()}</div>
         </header>
@@ -969,7 +969,7 @@ function Dashboard({ stats, salesOrders, leases, custName }) {
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard icon={Banknote} label="本日營業收入" value={fmt(stats.todayRevenue)} tone="bg-indigo-600" sub={`銷售單 ${fmt(stats.todayPosTotal)}（${stats.todayPosCount} 筆）· 銷售訂單 ${fmt(stats.todaySalesOrderTotal)}`} />
-        <StatCard icon={TrendingUp} label="本月銷售額" value={fmt(stats.salesTotal)} tone="bg-[#1b2a5d]" />
+        <StatCard icon={TrendingUp} label="本月銷售額" value={fmt(stats.salesTotal)} tone="bg-[#8FABD4]" />
         <StatCard icon={TrendingDown} label="本月採購額" value={fmt(stats.purchaseTotal)} tone="bg-teal-600" />
         <StatCard icon={Printer} label="租賃中機台數" value={stats.activeLeases} tone="bg-amber-600" />
         <StatCard icon={Gauge} label="本期應收租金(含計數)" value={fmt(stats.rentDue)} tone="bg-emerald-600" />
@@ -1090,7 +1090,7 @@ function CsvImportModal({ title, hint, headers, sampleRows, previewCols, normali
           <button onClick={() => downloadCsvTemplate(headers, sampleRows, templateFileName)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
             <Download size={14} /> 下載匯入範本
           </button>
-          <label className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] cursor-pointer">
+          <label className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] cursor-pointer">
             <Upload size={14} /> 選擇 CSV 檔案
             <input type="file" accept=".csv,text/csv" className="hidden" onChange={handleFile} />
           </label>
@@ -1151,7 +1151,7 @@ function CsvImportModal({ title, hint, headers, sampleRows, previewCols, normali
           <button
             onClick={confirm}
             disabled={validCount === 0}
-            className="flex-1 bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
+            className="flex-1 bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
           >
             確認匯入（{validCount} 筆）
           </button>
@@ -1197,7 +1197,7 @@ function ProductSearchSelect({ products, value, onChange, placeholder = "搜尋�
           <div className="p-2 border-b border-slate-100">
             <input
               autoFocus
-              className="w-full text-sm px-2 py-1.5 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1b2a5d]/20"
+              className="w-full text-sm px-2 py-1.5 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8FABD4]/20"
               placeholder={placeholder}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -1265,7 +1265,7 @@ function CustomerSearchSelect({ customers, value, onChange, placeholder = "搜�
           <div className="p-2 border-b border-slate-100">
             <input
               autoFocus
-              className="w-full text-sm px-2 py-1.5 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1b2a5d]/20"
+              className="w-full text-sm px-2 py-1.5 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8FABD4]/20"
               placeholder={placeholder}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -1373,7 +1373,7 @@ function CustomersTab({ customers, setCustomers }) {
           <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
             <Upload size={15} /> 批次匯入
           </button>
-          <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+          <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
             <Plus size={15} /> 新增客戶
           </button>
         </div>
@@ -1404,7 +1404,7 @@ function CustomersTab({ customers, setCustomers }) {
               <td className="px-4 py-2.5"><Badge tone="teal">{c.type}</Badge></td>
               <td className="px-4 py-2.5">
                 <div className="flex gap-2 justify-end">
-                  <button onClick={() => openEdit(c)} className="text-slate-400 hover:text-[#1b2a5d]"><Pencil size={14} /></button>
+                  <button onClick={() => openEdit(c)} className="text-slate-400 hover:text-[#8FABD4]"><Pencil size={14} /></button>
                   <button onClick={() => remove(c.id)} className="text-slate-400 hover:text-rose-500"><Trash2 size={14} /></button>
                 </div>
               </td>
@@ -1435,7 +1435,7 @@ function CustomersTab({ customers, setCustomers }) {
               <option>一般</option><option>租賃</option><option>一般+租賃</option>
             </select>
           </Field>
-          <button onClick={save} className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
+          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
         </Modal>
       )}
 
@@ -1575,7 +1575,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
             <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
               <Upload size={15} /> 批次匯入
             </button>
-            <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+            <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
               <Plus size={15} /> 新增商品
             </button>
           </div>
@@ -1583,7 +1583,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
         <div className="flex items-center flex-wrap gap-1.5">
           {cats.map((c) => (
             <div key={c} className="group relative">
-              <button onClick={() => setCat(c)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${cat === c ? "bg-[#1b2a5d] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}>
+              <button onClick={() => setCat(c)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${cat === c ? "bg-[#8FABD4] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}>
                 {c}
               </button>
               {c !== "全部" && !products.some((p) => p.category === c) && (
@@ -1607,7 +1607,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
                 onChange={(e) => setNewCatName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") submitNewCategory(); if (e.key === "Escape") { setAddingCat(false); setNewCatName(""); } }}
               />
-              <button onClick={submitNewCategory} className="text-xs bg-[#1b2a5d] text-white rounded-lg px-2 py-1.5">新增</button>
+              <button onClick={submitNewCategory} className="text-xs bg-[#8FABD4] text-white rounded-lg px-2 py-1.5">新增</button>
               <button onClick={() => { setAddingCat(false); setNewCatName(""); }} className="text-slate-300 hover:text-slate-600"><X size={14} /></button>
             </div>
           ) : (
@@ -1649,7 +1649,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
               </td>
               <td className="px-4 py-2.5">
                 <div className="flex gap-2 justify-end">
-                  <button onClick={() => openEdit(p)} className="text-slate-400 hover:text-[#1b2a5d]"><Pencil size={14} /></button>
+                  <button onClick={() => openEdit(p)} className="text-slate-400 hover:text-[#8FABD4]"><Pencil size={14} /></button>
                   <button onClick={() => remove(p.id)} className="text-slate-400 hover:text-rose-500"><Trash2 size={14} /></button>
                 </div>
               </td>
@@ -1691,7 +1691,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
             <Field label="單位"><input className={inputCls} value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} /></Field>
             <Field label="安全庫存"><input type="number" className={inputCls} value={form.reorder} onChange={(e) => setForm({ ...form, reorder: e.target.value })} /></Field>
           </div>
-          <button onClick={save} className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
+          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
         </Modal>
       )}
 
@@ -1854,7 +1854,7 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
           <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
             <Upload size={15} /> 批次匯入
           </button>
-          <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+          <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
             <Plus size={15} /> 新增銷售訂單
           </button>
         </div>
@@ -1926,12 +1926,12 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
                 <button onClick={() => rmItem(i)} className="text-slate-300 hover:text-rose-500"><X size={16} /></button>
               </div>
             ))}
-            <button onClick={addItem} className="text-xs text-[#1b2a5d] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
+            <button onClick={addItem} className="text-xs text-[#8FABD4] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
           </div>
           <div className="text-right font-semibold mt-4 mb-2 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
             合計：{fmt(form.items.reduce((a, i) => a + i.qty * i.price, 0))}
           </div>
-          <button onClick={save} className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立訂單</button>
+          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立訂單</button>
         </Modal>
       )}
 
@@ -2074,7 +2074,7 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
             </div>
           );
         })}
-        <button onClick={addItem} className="text-xs text-[#1b2a5d] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
+        <button onClick={addItem} className="text-xs text-[#8FABD4] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
 
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
           <div className="text-sm text-slate-500">共 {cart.items.length} 項</div>
@@ -2085,7 +2085,7 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
         <button
           onClick={checkout}
           disabled={!canCheckout}
-          className="w-full mt-3 bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+          className="w-full mt-3 bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
         >
           <CreditCard size={15} /> 完成結帳
         </button>
@@ -2154,7 +2154,7 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
       {voidTarget && (
         <Modal title="作廢銷售單" onClose={() => setVoidTarget(null)}>
           <p className="text-sm text-slate-600 mb-4">
-            確定要作廢單號 <span className="font-medium text-[#1b2a5d]">{voidTarget.id}</span> 嗎？作廢後將自動回補對應商品庫存，且此動作無法復原。
+            確定要作廢單號 <span className="font-medium text-[#8FABD4]">{voidTarget.id}</span> 嗎？作廢後將自動回補對應商品庫存，且此動作無法復原。
           </p>
           <div className="flex gap-2">
             <button onClick={() => setVoidTarget(null)} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
@@ -2174,18 +2174,18 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-y-auto" style={{ maxHeight: "90vh" }}>
         <div className="no-print flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-xl z-10">
           <div>
-            <h3 className="font-semibold text-[#1b2a5d]">銷售單預覽</h3>
+            <h3 className="font-semibold text-[#8FABD4]">銷售單預覽</h3>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
+            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
               <Receipt size={15} /> 列印 / 另存 PDF
             </button>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-2"><X size={18} /></button>
           </div>
         </div>
 
-        <div ref={printRef} className="invoice-print-area bg-white text-[#1b2a5d] p-6">
-          <div className="flex items-start justify-between border-b-2 border-[#1b2a5d] pb-3 mb-4">
+        <div ref={printRef} className="invoice-print-area bg-white text-[#8FABD4] p-6">
+          <div className="flex items-start justify-between border-b-2 border-[#8FABD4] pb-3 mb-4">
             <div className="flex items-center gap-2">
               <div className="w-11 h-11 rounded-lg bg-white border border-slate-200 flex items-center justify-center p-1">
                 <img src={LOGO_DATA_URI} alt="彩苑科技 logo" className="w-full h-full object-contain" />
@@ -2425,7 +2425,7 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
           <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋採購編號、供應商、商品或狀態" className={inputCls + " pl-8"} />
         </div>
-        <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+        <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
           <Plus size={15} /> 新增採購單
         </button>
       </div>
@@ -2493,12 +2493,12 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
                 <button onClick={() => rmItem(i)} className="text-slate-300 hover:text-rose-500"><X size={16} /></button>
               </div>
             ))}
-            <button onClick={addItem} className="text-xs text-[#1b2a5d] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
+            <button onClick={addItem} className="text-xs text-[#8FABD4] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
           </div>
           <div className="text-right font-semibold mt-4 mb-2 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
             合計：{fmt(form.items.reduce((a, i) => a + i.qty * i.cost, 0))}
           </div>
-          <button onClick={save} className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立採購單</button>
+          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立採購單</button>
         </Modal>
       )}
     </div>
@@ -2597,7 +2597,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
             <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋客戶、機型、序號或狀態" className={inputCls + " pl-8"} />
           </div>
-          <button onClick={() => { openAdd(); }} className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] shrink-0">
+          <button onClick={() => { openAdd(); }} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] shrink-0">
             <Plus size={15} /> 新增租賃合約
           </button>
         </div>
@@ -2634,7 +2634,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
                   <div key={l.id} className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <div className="font-semibold text-[#1b2a5d] flex items-center gap-2">
+                        <div className="font-semibold text-[#8FABD4] flex items-center gap-2">
                           <Printer size={15} className="text-amber-600" /> {l.machineName}
                           <Badge tone={isLaser ? "teal" : "slate"}>{l.machineType || "雷射"}</Badge>
                         </div>
@@ -2658,7 +2658,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
                     </div>
                     <div className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2 mb-3">
                       <span className="text-xs text-slate-500">本期應收合計</span>
-                      <span className="font-bold text-[#1b2a5d] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(billing)}</span>
+                      <span className="font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(billing)}</span>
                     </div>
                     <div className="flex gap-2 text-xs">
                       {isLaser && (
@@ -2717,7 +2717,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
               </>
             )}
           </div>
-          <button onClick={save} className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium mt-3 hover:bg-[#142049]">儲存合約</button>
+          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium mt-3 hover:bg-[#142049]">儲存合約</button>
         </Modal>
       )}
 
@@ -2731,11 +2731,11 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
             <div className="flex justify-between text-slate-500"><span>本期用量</span><span className="tabular-nums text-slate-700">{Math.max(0, meterVal - meterModal.lastMeter).toLocaleString()} 張</span></div>
             <div className="flex justify-between text-slate-500"><span>張數費用</span><span className="tabular-nums text-slate-700">{fmt(Math.max(0, meterVal - meterModal.lastMeter) * meterModal.meterRate)}</span></div>
             <div className="flex justify-between text-slate-500"><span>月租金</span><span className="tabular-nums text-slate-700">{fmt(meterModal.monthlyRent)}</span></div>
-            <div className="flex justify-between font-semibold text-[#1b2a5d] pt-1 border-t border-slate-200"><span>應收合計</span><span className="tabular-nums">{fmt(meterModal.monthlyRent + Math.max(0, meterVal - meterModal.lastMeter) * meterModal.meterRate)}</span></div>
+            <div className="flex justify-between font-semibold text-[#8FABD4] pt-1 border-t border-slate-200"><span>應收合計</span><span className="tabular-nums">{fmt(meterModal.monthlyRent + Math.max(0, meterVal - meterModal.lastMeter) * meterModal.meterRate)}</span></div>
           </div>
           <div className="flex gap-2">
             <button onClick={saveMeterReading} className="flex-1 border border-slate-200 text-slate-600 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50">僅更新讀數</button>
-            <button onClick={confirmBilling} className="flex-1 flex items-center justify-center gap-1.5 bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]"><CheckCircle2 size={14} /> 確認出帳</button>
+            <button onClick={confirmBilling} className="flex-1 flex items-center justify-center gap-1.5 bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]"><CheckCircle2 size={14} /> 確認出帳</button>
           </div>
           <button onClick={() => doPrint(meterModal, meterVal)} className="w-full flex items-center justify-center gap-1.5 border border-slate-200 text-slate-600 rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-slate-50">
             <Receipt size={14} /> 列印本期請款單
@@ -2772,18 +2772,18 @@ function InvoicePreview({ data, onClose }) {
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-y-auto" style={{ maxHeight: "90vh" }}>
         <div className="no-print flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-xl z-10">
           <div>
-            <h3 className="font-semibold text-[#1b2a5d]">請款單預覽</h3>
+            <h3 className="font-semibold text-[#8FABD4]">請款單預覽</h3>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
+            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
               <Receipt size={15} /> 列印 / 另存 PDF
             </button>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-2"><X size={18} /></button>
           </div>
         </div>
 
-        <div ref={printRef} className="invoice-print-area bg-white text-[#1b2a5d] p-8">
-          <div className="flex items-start justify-between border-b-2 border-[#1b2a5d] pb-4 mb-6">
+        <div ref={printRef} className="invoice-print-area bg-white text-[#8FABD4] p-8">
+          <div className="flex items-start justify-between border-b-2 border-[#8FABD4] pb-4 mb-6">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-lg bg-white border border-slate-200 flex items-center justify-center p-1">
                 <img src={LOGO_DATA_URI} alt="彩苑科技 logo" className="w-full h-full object-contain" />
@@ -3041,7 +3041,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
           <div className="text-xs text-slate-500 mb-1">未結清應收總額</div>
-          <div className="text-2xl font-bold text-[#1b2a5d] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totals.total)}</div>
+          <div className="text-2xl font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totals.total)}</div>
           <div className="text-xs text-slate-400 mt-1">共 {totals.count} 筆</div>
         </div>
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
@@ -3191,12 +3191,12 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
         <div className="fixed bottom-0 left-0 right-0 sm:left-60 bg-white border-t border-slate-200 z-30 shadow-lg">
           <div className="px-4 sm:px-8 py-3 flex items-center justify-between flex-wrap gap-2">
             <div className="text-sm text-slate-600">
-              已選取 <b className="text-[#1b2a5d]">{selectedIds.length}</b> 筆・{custName(selectedCustomerId)}・合計未收
+              已選取 <b className="text-[#8FABD4]">{selectedIds.length}</b> 筆・{custName(selectedCustomerId)}・合計未收
               <span className="font-semibold text-rose-600 tabular-nums ml-1" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(selectedBalanceSum)}</span>
             </div>
             <div className="flex gap-2">
               <button onClick={() => setSelectedIds([])} className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 text-slate-500 hover:bg-slate-50">取消選取</button>
-              <button onClick={openReconcile} className="px-4 py-1.5 rounded-lg text-sm text-white bg-[#1b2a5d] hover:bg-[#142049] flex items-center gap-1.5">
+              <button onClick={openReconcile} className="px-4 py-1.5 rounded-lg text-sm text-white bg-[#8FABD4] hover:bg-[#142049] flex items-center gap-1.5">
                 <ArrowRightLeft size={14} /> 執行沖帳
               </button>
             </div>
@@ -3231,7 +3231,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
                   );
                 })}
               </div>
-              <div className="text-right text-sm mt-1 text-slate-500">沖帳分配合計：<b className="text-[#1b2a5d] tabular-nums">{fmt(totalAlloc)}</b></div>
+              <div className="text-right text-sm mt-1 text-slate-500">沖帳分配合計：<b className="text-[#8FABD4] tabular-nums">{fmt(totalAlloc)}</b></div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -3241,7 +3241,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
                     <button
                       key={m}
                       onClick={() => setMethod(m)}
-                      className={`flex-1 py-2 rounded-lg text-sm border flex items-center justify-center gap-1.5 ${method === m ? "border-[#1b2a5d] bg-slate-50 text-[#1b2a5d]" : "border-slate-200 text-slate-500"}`}
+                      className={`flex-1 py-2 rounded-lg text-sm border flex items-center justify-center gap-1.5 ${method === m ? "border-[#8FABD4] bg-slate-50 text-[#8FABD4]" : "border-slate-200 text-slate-500"}`}
                     >
                       {m === "現金" ? <Banknote size={14} /> : <Landmark size={14} />} {m}
                     </button>
@@ -3301,7 +3301,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
             <button
               onClick={submitReconcile}
               disabled={diff !== 0 || totalAlloc <= 0}
-              className="w-full bg-[#1b2a5d] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
+              className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
             >
               確認沖帳
             </button>
@@ -3331,7 +3331,7 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
     <div className="space-y-4">
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
         <div className="text-xs text-slate-500 mb-1">預收款可用餘額合計</div>
-        <div className="text-2xl font-bold text-[#1b2a5d] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totalBalance)}</div>
+        <div className="text-2xl font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totalBalance)}</div>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
@@ -3348,7 +3348,7 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
           <Field label="日期">
             <input type="date" className={inputCls} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
           </Field>
-          <button onClick={add} className="h-[38px] rounded-lg text-sm text-white bg-[#1b2a5d] hover:bg-[#142049] flex items-center justify-center gap-1.5">
+          <button onClick={add} className="h-[38px] rounded-lg text-sm text-white bg-[#8FABD4] hover:bg-[#142049] flex items-center justify-center gap-1.5">
             <Plus size={14} /> 新增
           </button>
         </div>
@@ -3375,7 +3375,7 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
                   <td className="px-4 py-2.5 text-slate-700">{custName(p.customerId)}</td>
                   <td className="px-4 py-2.5 text-slate-500 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{p.date}</td>
                   <td className="px-4 py-2.5 text-right tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.amount)}</td>
-                  <td className={`px-4 py-2.5 text-right font-semibold tabular-nums ${p.balance > 0 ? "text-[#1b2a5d]" : "text-slate-300"}`} style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.balance)}</td>
+                  <td className={`px-4 py-2.5 text-right font-semibold tabular-nums ${p.balance > 0 ? "text-[#8FABD4]" : "text-slate-300"}`} style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.balance)}</td>
                   <td className="px-4 py-2.5 text-slate-500">{p.note}</td>
                 </tr>
               ))}
@@ -3418,7 +3418,7 @@ function StaffTab({ currentUserId }) {
         <h3 className="text-sm text-slate-500">共 {rows.length} 位人員帳號</h3>
         <button
           onClick={() => setModal({ mode: "add" })}
-          className="flex items-center gap-1.5 bg-[#1b2a5d] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]"
+          className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]"
         >
           <Plus size={15} /> 新增人員
         </button>
@@ -3504,7 +3504,7 @@ function StaffDeleteConfirm({ target, onClose, onDeleted }) {
   return (
     <div>
       <p className="text-sm text-slate-600 mb-4">
-        確定要刪除人員帳號 <span className="font-medium text-[#1b2a5d]">{target.display_name || target.email}</span>（{target.email}）嗎？此動作無法復原，該帳號將無法再登入系統。
+        確定要刪除人員帳號 <span className="font-medium text-[#8FABD4]">{target.display_name || target.email}</span>（{target.email}）嗎？此動作無法復原，該帳號將無法再登入系統。
       </p>
       {err && <div className="text-xs text-rose-500 mb-3">{err}</div>}
       <div className="flex gap-2">
@@ -3585,7 +3585,7 @@ function StaffFormModal({ mode, row, onClose, onSaved }) {
         {err && <div className="text-xs text-rose-500">{err}</div>}
         <div className="flex gap-2 pt-1">
           <button type="button" onClick={onClose} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
-          <button type="submit" disabled={busy} className="flex-1 bg-[#1b2a5d] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
+          <button type="submit" disabled={busy} className="flex-1 bg-[#8FABD4] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
             {busy ? "處理中…" : isEdit ? "儲存變更" : "建立帳號"}
           </button>
         </div>
