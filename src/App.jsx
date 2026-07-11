@@ -1649,6 +1649,7 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [q, setQ] = useState("");
 
   const openAdd = () => setForm({ date: todayStr(), customerId: customers[0]?.id || "", status: "待出貨", items: [{ productId: products[0]?.id || "", qty: 1, price: products[0]?.price || 0 }] });
   const addItem = () => setForm({ ...form, items: [...form.items, { productId: products[0]?.id || "", qty: 1, price: products[0]?.price || 0 }] });
@@ -1755,10 +1756,22 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
     setImportOpen(false);
   };
 
+  const filtered = salesOrders.filter((o) => {
+    const kw = q.trim().toLowerCase();
+    if (!kw) return true;
+    const haystack = [o.id, o.date, o.status, custName(o.customerId), ...o.items.map((i) => prodName(i.productId))]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(kw);
+  });
+
   return (
     <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
       <div className="flex items-center justify-between p-4 border-b border-slate-100 flex-wrap gap-2">
-        <h3 className="text-sm text-slate-500">共 {salesOrders.length} 筆訂單</h3>
+        <div className="relative w-72">
+          <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋訂單編號、客戶、商品、日期或狀態" className={inputCls + " pl-8"} />
+        </div>
         <div className="flex gap-2">
           <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
             <Upload size={15} /> 批次匯入
@@ -1782,7 +1795,7 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
           </tr>
         </thead>
         <tbody>
-          {salesOrders.map((o) => {
+          {filtered.map((o) => {
             const total = o.items.reduce((a, i) => a + i.qty * i.price, 0);
             return (
               <tr key={o.id} className="border-b border-slate-50 hover:bg-slate-50/60 align-top">
@@ -1802,6 +1815,9 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
               </tr>
             );
           })}
+          {filtered.length === 0 && (
+            <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-400">找不到符合條件的訂單</td></tr>
+          )}
         </tbody>
       </table>
 </div>
@@ -1880,6 +1896,7 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
   const [cart, setCart] = useState(blankCart());
   const [receipt, setReceipt] = useState(null);
   const [voidTarget, setVoidTarget] = useState(null);
+  const [q, setQ] = useState("");
 
   const addItem = () => setCart({ ...cart, items: [...cart.items, { productId: products[0]?.id || "", qty: 1, price: products[0]?.price || 0 }] });
   const updItem = (i, key, val) => {
@@ -1894,6 +1911,15 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
   const stockOf = (id) => products.find((p) => p.id === id)?.stock ?? 0;
   const overStockItems = cart.items.filter((it) => it.productId && it.qty > stockOf(it.productId));
   const canCheckout = !!cart.date && cart.items.length > 0 && cart.items.every((it) => it.productId && it.qty > 0) && overStockItems.length === 0;
+
+  const filteredPosSales = posSales.filter((s) => {
+    const kw = q.trim().toLowerCase();
+    if (!kw) return true;
+    const haystack = [s.id, s.date, s.paymentMethod, s.customerId ? custName(s.customerId) : "現場客戶", ...s.items.map((i) => prodName(i.productId))]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(kw);
+  });
 
   const checkout = () => {
     if (!canCheckout) return;
@@ -1991,8 +2017,12 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
       </div>
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
-        <div className="flex items-center justify-between p-4 border-b border-slate-100">
+        <div className="flex items-center justify-between p-4 border-b border-slate-100 flex-wrap gap-2">
           <h3 className="text-sm text-slate-500">今日已結帳 {posSales.filter((s) => s.date === todayStr()).length} 筆 · 共 {posSales.length} 筆歷史紀錄</h3>
+          <div className="relative w-72">
+            <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋單號、客戶、商品或付款方式" className={inputCls + " pl-8"} />
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -2011,7 +2041,10 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
               {posSales.length === 0 && (
                 <tr><td colSpan="7" className="px-4 py-8 text-center text-slate-400 text-sm">尚無結帳紀錄</td></tr>
               )}
-              {posSales.map((s) => (
+              {posSales.length > 0 && filteredPosSales.length === 0 && (
+                <tr><td colSpan="7" className="px-4 py-8 text-center text-slate-400 text-sm">找不到符合條件的紀錄</td></tr>
+              )}
+              {filteredPosSales.map((s) => (
                 <tr key={s.id} className="border-b border-slate-50 hover:bg-slate-50/60 align-top">
                   <td className="px-4 py-2.5 text-slate-400 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{s.id}</td>
                   <td className="px-4 py-2.5">{s.date} {s.time}</td>
@@ -2139,6 +2172,7 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
 function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts, prodName }) {
   const [modal, setModal] = useState(false);
   const [form, setForm] = useState(null);
+  const [q, setQ] = useState("");
 
   const openAdd = () => setForm({ date: todayStr(), supplier: "", status: "訂購中", items: [{ productId: products[0]?.id || "", qty: 1, cost: products[0]?.cost || 0 }] });
   const addItem = () => setForm({ ...form, items: [...form.items, { productId: products[0]?.id || "", qty: 1, cost: products[0]?.cost || 0 }] });
@@ -2164,14 +2198,27 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
     setPurchaseOrders(purchaseOrders.map((x) => (x.id === o.id ? { ...x, status } : x)));
   };
 
+  const filtered = purchaseOrders.filter((o) => {
+    const kw = q.trim().toLowerCase();
+    if (!kw) return true;
+    const haystack = [o.id, o.date, o.supplier, o.status, ...o.items.map((i) => prodName(i.productId))]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(kw);
+  });
+
   return (
     <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
-      <div className="flex items-center justify-between p-4 border-b border-slate-100">
-        <h3 className="text-sm text-slate-500">共 {purchaseOrders.length} 筆採購單（狀態改為「已入庫」將自動加回庫存）</h3>
+      <div className="flex items-center justify-between p-4 border-b border-slate-100 flex-wrap gap-2">
+        <div className="relative w-72">
+          <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋採購編號、供應商、商品或狀態" className={inputCls + " pl-8"} />
+        </div>
         <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-slate-800 text-white text-sm px-3.5 py-2 rounded-lg hover:bg-slate-900">
           <Plus size={15} /> 新增採購單
         </button>
       </div>
+      <div className="px-4 pt-3 text-xs text-slate-400">狀態改為「已入庫」將自動加回庫存</div>
       <div className="overflow-x-auto">
 <table className="w-full text-sm">
         <thead>
@@ -2186,7 +2233,7 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
           </tr>
         </thead>
         <tbody>
-          {purchaseOrders.map((o) => {
+          {filtered.map((o) => {
             const total = o.items.reduce((a, i) => a + i.qty * i.cost, 0);
             return (
               <tr key={o.id} className="border-b border-slate-50 hover:bg-slate-50/60 align-top">
@@ -2206,6 +2253,9 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
               </tr>
             );
           })}
+          {filtered.length === 0 && (
+            <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-slate-400">找不到符合條件的採購單</td></tr>
+          )}
         </tbody>
       </table>
 </div>
