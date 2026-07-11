@@ -551,7 +551,7 @@ const Modal = ({ title, onClose, children, wide }) => (
   <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div className={`bg-white rounded-xl shadow-2xl w-full ${wide ? "max-w-2xl" : "max-w-md"} overflow-y-auto`} style={{ maxHeight: "88vh" }}>
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-xl">
-        <h3 className="font-semibold text-[#8FABD4]" style={{ fontFamily: "'Noto Sans TC', sans-serif" }}>{title}</h3>
+        <h3 className="font-semibold text-[#0A3981]" style={{ fontFamily: "'Noto Sans TC', sans-serif" }}>{title}</h3>
         <button onClick={onClose} className="text-slate-400 hover:text-slate-700"><X size={18} /></button>
       </div>
       <div className="p-6">{children}</div>
@@ -575,7 +575,7 @@ const StatCard = ({ icon: Icon, label, value, tone, sub }) => (
         <Icon size={17} className="text-white" />
       </div>
     </div>
-    <div className="text-2xl font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{value}</div>
+    <div className="text-2xl font-bold text-[#0A3981] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{value}</div>
     <div className="text-xs text-slate-500 mt-1">{label}</div>
     {sub && <div className="text-xs text-slate-400 mt-1">{sub}</div>}
   </div>
@@ -620,7 +620,7 @@ function LoginScreen() {
             <img src={LOGO_DATA_URI} alt="彩苑科技 logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <div className="font-bold text-sm text-[#8FABD4]">彩苑科技有限公司</div>
+            <div className="font-bold text-sm text-[#0A3981]">彩苑科技有限公司</div>
             <div className="text-xs text-slate-400">ERP 系統登入</div>
           </div>
         </div>
@@ -862,13 +862,13 @@ function ErpApp() {
             <img src={LOGO_DATA_URI} alt="OK ink logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <div className="font-bold text-sm leading-tight" style={{ color: "#4A70A9" }}>彩苑科技有限公司</div>
-            <div className="text-xs tracking-wide flex items-center gap-1" style={{ color: "#4A70A9" }}>
+            <div className="font-bold text-sm leading-tight" style={{ color: "#0A3981" }}>彩苑科技有限公司</div>
+            <div className="text-xs tracking-wide flex items-center gap-1" style={{ color: "#0A3981" }}>
               {supabase ? <Cloud size={11} /> : <CloudOff size={11} />}
               {supabase ? "已連接 Supabase" : "尚未連接（本機模式）"}
             </div>
           </div>
-          <button onClick={() => setNavOpen(false)} className="ml-auto text-[#4A70A9]/70 hover:text-[#4A70A9] sm:hidden">
+          <button onClick={() => setNavOpen(false)} className="ml-auto text-[#0A3981]/70 hover:text-[#0A3981] sm:hidden">
             <X size={18} />
           </button>
         </div>
@@ -878,7 +878,7 @@ function ErpApp() {
               key={n.key}
               onClick={() => { setTab(n.key); setNavOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-                tab === n.key ? "font-medium" : "text-[#4A70A9]/70 hover:bg-white/5 hover:text-[#4A70A9]"
+                tab === n.key ? "font-medium" : "text-[#0A3981]/70 hover:bg-white/5 hover:text-[#0A3981]"
               }`}
               style={tab === n.key ? { backgroundColor: "rgba(246,220,197,0.16)", color: "#EFECE3" } : undefined}
             >
@@ -901,13 +901,13 @@ function ErpApp() {
             <div>
               <div className="flex items-center gap-2">
                 <div className="min-w-0">
-                  <div className="text-xs text-[#4A70A9] truncate">{profile?.display_name || session.user.email}</div>
-                  <div className="text-[10px] text-[#4A70A9]/70">{role === "admin" ? "管理員" : "一般人員"}</div>
+                  <div className="text-xs text-[#0A3981] truncate">{profile?.display_name || session.user.email}</div>
+                  <div className="text-[10px] text-[#0A3981]/70">{role === "admin" ? "管理員" : "一般人員"}</div>
                 </div>
-                <button onClick={signOut} className="ml-auto text-[#4A70A9]/70 hover:text-[#4A70A9] text-xs px-2 py-1 rounded hover:bg-white/10">登出</button>
+                <button onClick={signOut} className="ml-auto text-[#0A3981]/70 hover:text-[#0A3981] text-xs px-2 py-1 rounded hover:bg-white/10">登出</button>
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <button onClick={() => setShowChangePassword(true)} className="text-[11px] text-[#4A70A9]/80 hover:text-[#4A70A9] underline underline-offset-2">變更密碼</button>
+                <button onClick={() => setShowChangePassword(true)} className="text-[11px] text-[#0A3981]/80 hover:text-[#0A3981] underline underline-offset-2">變更密碼</button>
                 {profileError && (
                   <button onClick={refreshProfile} className="text-[11px] text-amber-400 hover:text-amber-300 underline underline-offset-2">角色讀取失敗，點此重試</button>
                 )}
@@ -917,7 +917,7 @@ function ErpApp() {
               )}
             </div>
           ) : (
-            <div className="text-xs text-[#4A70A9]/70">印表機 · 事務機 銷售與租賃</div>
+            <div className="text-xs text-[#0A3981]/70">印表機 · 事務機 銷售與租賃</div>
           )}
         </div>
       </aside>
@@ -931,7 +931,7 @@ function ErpApp() {
             <button onClick={() => setNavOpen(true)} className="sm:hidden text-slate-500 shrink-0">
               <Menu size={22} />
             </button>
-            <h1 className="text-lg font-bold text-[#8FABD4] truncate">{navItems.find((n) => n.key === tab)?.label}</h1>
+            <h1 className="text-lg font-bold text-[#0A3981] truncate">{navItems.find((n) => n.key === tab)?.label}</h1>
           </div>
           <div className="text-xs text-slate-400 tabular-nums shrink-0" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{todayStr()}</div>
         </header>
@@ -1404,7 +1404,7 @@ function CustomersTab({ customers, setCustomers }) {
               <td className="px-4 py-2.5"><Badge tone="teal">{c.type}</Badge></td>
               <td className="px-4 py-2.5">
                 <div className="flex gap-2 justify-end">
-                  <button onClick={() => openEdit(c)} className="text-slate-400 hover:text-[#8FABD4]"><Pencil size={14} /></button>
+                  <button onClick={() => openEdit(c)} className="text-slate-400 hover:text-[#0A3981]"><Pencil size={14} /></button>
                   <button onClick={() => remove(c.id)} className="text-slate-400 hover:text-rose-500"><Trash2 size={14} /></button>
                 </div>
               </td>
@@ -1649,7 +1649,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
               </td>
               <td className="px-4 py-2.5">
                 <div className="flex gap-2 justify-end">
-                  <button onClick={() => openEdit(p)} className="text-slate-400 hover:text-[#8FABD4]"><Pencil size={14} /></button>
+                  <button onClick={() => openEdit(p)} className="text-slate-400 hover:text-[#0A3981]"><Pencil size={14} /></button>
                   <button onClick={() => remove(p.id)} className="text-slate-400 hover:text-rose-500"><Trash2 size={14} /></button>
                 </div>
               </td>
@@ -1926,7 +1926,7 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
                 <button onClick={() => rmItem(i)} className="text-slate-300 hover:text-rose-500"><X size={16} /></button>
               </div>
             ))}
-            <button onClick={addItem} className="text-xs text-[#8FABD4] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
+            <button onClick={addItem} className="text-xs text-[#0A3981] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
           </div>
           <div className="text-right font-semibold mt-4 mb-2 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
             合計：{fmt(form.items.reduce((a, i) => a + i.qty * i.price, 0))}
@@ -2074,7 +2074,7 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
             </div>
           );
         })}
-        <button onClick={addItem} className="text-xs text-[#8FABD4] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
+        <button onClick={addItem} className="text-xs text-[#0A3981] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
 
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
           <div className="text-sm text-slate-500">共 {cart.items.length} 項</div>
@@ -2154,7 +2154,7 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
       {voidTarget && (
         <Modal title="作廢銷售單" onClose={() => setVoidTarget(null)}>
           <p className="text-sm text-slate-600 mb-4">
-            確定要作廢單號 <span className="font-medium text-[#8FABD4]">{voidTarget.id}</span> 嗎？作廢後將自動回補對應商品庫存，且此動作無法復原。
+            確定要作廢單號 <span className="font-medium text-[#0A3981]">{voidTarget.id}</span> 嗎？作廢後將自動回補對應商品庫存，且此動作無法復原。
           </p>
           <div className="flex gap-2">
             <button onClick={() => setVoidTarget(null)} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
@@ -2174,7 +2174,7 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-y-auto" style={{ maxHeight: "90vh" }}>
         <div className="no-print flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-xl z-10">
           <div>
-            <h3 className="font-semibold text-[#8FABD4]">銷售單預覽</h3>
+            <h3 className="font-semibold text-[#0A3981]">銷售單預覽</h3>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
@@ -2184,7 +2184,7 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
           </div>
         </div>
 
-        <div ref={printRef} className="invoice-print-area bg-white text-[#8FABD4] p-6">
+        <div ref={printRef} className="invoice-print-area bg-white text-[#0A3981] p-6">
           <div className="flex items-start justify-between border-b-2 border-[#8FABD4] pb-3 mb-4">
             <div className="flex items-center gap-2">
               <div className="w-11 h-11 rounded-lg bg-white border border-slate-200 flex items-center justify-center p-1">
@@ -2493,7 +2493,7 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
                 <button onClick={() => rmItem(i)} className="text-slate-300 hover:text-rose-500"><X size={16} /></button>
               </div>
             ))}
-            <button onClick={addItem} className="text-xs text-[#8FABD4] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
+            <button onClick={addItem} className="text-xs text-[#0A3981] font-medium flex items-center gap-1 mt-1"><Plus size={13} /> 新增品項</button>
           </div>
           <div className="text-right font-semibold mt-4 mb-2 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
             合計：{fmt(form.items.reduce((a, i) => a + i.qty * i.cost, 0))}
@@ -2634,7 +2634,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
                   <div key={l.id} className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <div className="font-semibold text-[#8FABD4] flex items-center gap-2">
+                        <div className="font-semibold text-[#0A3981] flex items-center gap-2">
                           <Printer size={15} className="text-amber-600" /> {l.machineName}
                           <Badge tone={isLaser ? "teal" : "slate"}>{l.machineType || "雷射"}</Badge>
                         </div>
@@ -2658,7 +2658,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
                     </div>
                     <div className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2 mb-3">
                       <span className="text-xs text-slate-500">本期應收合計</span>
-                      <span className="font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(billing)}</span>
+                      <span className="font-bold text-[#0A3981] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(billing)}</span>
                     </div>
                     <div className="flex gap-2 text-xs">
                       {isLaser && (
@@ -2731,7 +2731,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
             <div className="flex justify-between text-slate-500"><span>本期用量</span><span className="tabular-nums text-slate-700">{Math.max(0, meterVal - meterModal.lastMeter).toLocaleString()} 張</span></div>
             <div className="flex justify-between text-slate-500"><span>張數費用</span><span className="tabular-nums text-slate-700">{fmt(Math.max(0, meterVal - meterModal.lastMeter) * meterModal.meterRate)}</span></div>
             <div className="flex justify-between text-slate-500"><span>月租金</span><span className="tabular-nums text-slate-700">{fmt(meterModal.monthlyRent)}</span></div>
-            <div className="flex justify-between font-semibold text-[#8FABD4] pt-1 border-t border-slate-200"><span>應收合計</span><span className="tabular-nums">{fmt(meterModal.monthlyRent + Math.max(0, meterVal - meterModal.lastMeter) * meterModal.meterRate)}</span></div>
+            <div className="flex justify-between font-semibold text-[#0A3981] pt-1 border-t border-slate-200"><span>應收合計</span><span className="tabular-nums">{fmt(meterModal.monthlyRent + Math.max(0, meterVal - meterModal.lastMeter) * meterModal.meterRate)}</span></div>
           </div>
           <div className="flex gap-2">
             <button onClick={saveMeterReading} className="flex-1 border border-slate-200 text-slate-600 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50">僅更新讀數</button>
@@ -2772,7 +2772,7 @@ function InvoicePreview({ data, onClose }) {
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-y-auto" style={{ maxHeight: "90vh" }}>
         <div className="no-print flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-xl z-10">
           <div>
-            <h3 className="font-semibold text-[#8FABD4]">請款單預覽</h3>
+            <h3 className="font-semibold text-[#0A3981]">請款單預覽</h3>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
@@ -2782,7 +2782,7 @@ function InvoicePreview({ data, onClose }) {
           </div>
         </div>
 
-        <div ref={printRef} className="invoice-print-area bg-white text-[#8FABD4] p-8">
+        <div ref={printRef} className="invoice-print-area bg-white text-[#0A3981] p-8">
           <div className="flex items-start justify-between border-b-2 border-[#8FABD4] pb-4 mb-6">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 rounded-lg bg-white border border-slate-200 flex items-center justify-center p-1">
@@ -3041,7 +3041,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
           <div className="text-xs text-slate-500 mb-1">未結清應收總額</div>
-          <div className="text-2xl font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totals.total)}</div>
+          <div className="text-2xl font-bold text-[#0A3981] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totals.total)}</div>
           <div className="text-xs text-slate-400 mt-1">共 {totals.count} 筆</div>
         </div>
         <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
@@ -3191,7 +3191,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
         <div className="fixed bottom-0 left-0 right-0 sm:left-60 bg-white border-t border-slate-200 z-30 shadow-lg">
           <div className="px-4 sm:px-8 py-3 flex items-center justify-between flex-wrap gap-2">
             <div className="text-sm text-slate-600">
-              已選取 <b className="text-[#8FABD4]">{selectedIds.length}</b> 筆・{custName(selectedCustomerId)}・合計未收
+              已選取 <b className="text-[#0A3981]">{selectedIds.length}</b> 筆・{custName(selectedCustomerId)}・合計未收
               <span className="font-semibold text-rose-600 tabular-nums ml-1" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(selectedBalanceSum)}</span>
             </div>
             <div className="flex gap-2">
@@ -3231,7 +3231,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
                   );
                 })}
               </div>
-              <div className="text-right text-sm mt-1 text-slate-500">沖帳分配合計：<b className="text-[#8FABD4] tabular-nums">{fmt(totalAlloc)}</b></div>
+              <div className="text-right text-sm mt-1 text-slate-500">沖帳分配合計：<b className="text-[#0A3981] tabular-nums">{fmt(totalAlloc)}</b></div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -3241,7 +3241,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
                     <button
                       key={m}
                       onClick={() => setMethod(m)}
-                      className={`flex-1 py-2 rounded-lg text-sm border flex items-center justify-center gap-1.5 ${method === m ? "border-[#8FABD4] bg-slate-50 text-[#8FABD4]" : "border-slate-200 text-slate-500"}`}
+                      className={`flex-1 py-2 rounded-lg text-sm border flex items-center justify-center gap-1.5 ${method === m ? "border-[#8FABD4] bg-slate-50 text-[#0A3981]" : "border-slate-200 text-slate-500"}`}
                     >
                       {m === "現金" ? <Banknote size={14} /> : <Landmark size={14} />} {m}
                     </button>
@@ -3331,7 +3331,7 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
     <div className="space-y-4">
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
         <div className="text-xs text-slate-500 mb-1">預收款可用餘額合計</div>
-        <div className="text-2xl font-bold text-[#8FABD4] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totalBalance)}</div>
+        <div className="text-2xl font-bold text-[#0A3981] tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(totalBalance)}</div>
       </div>
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
@@ -3375,7 +3375,7 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
                   <td className="px-4 py-2.5 text-slate-700">{custName(p.customerId)}</td>
                   <td className="px-4 py-2.5 text-slate-500 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{p.date}</td>
                   <td className="px-4 py-2.5 text-right tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.amount)}</td>
-                  <td className={`px-4 py-2.5 text-right font-semibold tabular-nums ${p.balance > 0 ? "text-[#8FABD4]" : "text-slate-300"}`} style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.balance)}</td>
+                  <td className={`px-4 py-2.5 text-right font-semibold tabular-nums ${p.balance > 0 ? "text-[#0A3981]" : "text-slate-300"}`} style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.balance)}</td>
                   <td className="px-4 py-2.5 text-slate-500">{p.note}</td>
                 </tr>
               ))}
@@ -3504,7 +3504,7 @@ function StaffDeleteConfirm({ target, onClose, onDeleted }) {
   return (
     <div>
       <p className="text-sm text-slate-600 mb-4">
-        確定要刪除人員帳號 <span className="font-medium text-[#8FABD4]">{target.display_name || target.email}</span>（{target.email}）嗎？此動作無法復原，該帳號將無法再登入系統。
+        確定要刪除人員帳號 <span className="font-medium text-[#0A3981]">{target.display_name || target.email}</span>（{target.email}）嗎？此動作無法復原，該帳號將無法再登入系統。
       </p>
       {err && <div className="text-xs text-rose-500 mb-3">{err}</div>}
       <div className="flex gap-2">
