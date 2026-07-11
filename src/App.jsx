@@ -862,13 +862,13 @@ function ErpApp() {
             <img src={LOGO_DATA_URI} alt="OK ink logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <div className="font-bold text-sm leading-tight" style={{ color: "#FFFFFF" }}>彩苑科技有限公司</div>
-            <div className="text-xs tracking-wide flex items-center gap-1" style={{ color: "#B9C2D0" }}>
+            <div className="font-bold text-sm leading-tight" style={{ color: "#4A70A9" }}>彩苑科技有限公司</div>
+            <div className="text-xs tracking-wide flex items-center gap-1" style={{ color: "#4A70A9" }}>
               {supabase ? <Cloud size={11} /> : <CloudOff size={11} />}
               {supabase ? "已連接 Supabase" : "尚未連接（本機模式）"}
             </div>
           </div>
-          <button onClick={() => setNavOpen(false)} className="ml-auto text-white/50 hover:text-white sm:hidden">
+          <button onClick={() => setNavOpen(false)} className="ml-auto text-[#4A70A9]/70 hover:text-[#4A70A9] sm:hidden">
             <X size={18} />
           </button>
         </div>
@@ -878,7 +878,7 @@ function ErpApp() {
               key={n.key}
               onClick={() => { setTab(n.key); setNavOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
-                tab === n.key ? "font-medium" : "text-white/60 hover:bg-white/5 hover:text-white"
+                tab === n.key ? "font-medium" : "text-[#4A70A9]/70 hover:bg-white/5 hover:text-[#4A70A9]"
               }`}
               style={tab === n.key ? { backgroundColor: "rgba(246,220,197,0.16)", color: "#EFECE3" } : undefined}
             >
@@ -901,13 +901,13 @@ function ErpApp() {
             <div>
               <div className="flex items-center gap-2">
                 <div className="min-w-0">
-                  <div className="text-xs text-white/80 truncate">{profile?.display_name || session.user.email}</div>
-                  <div className="text-[10px] text-white/40">{role === "admin" ? "管理員" : "一般人員"}</div>
+                  <div className="text-xs text-[#4A70A9] truncate">{profile?.display_name || session.user.email}</div>
+                  <div className="text-[10px] text-[#4A70A9]/70">{role === "admin" ? "管理員" : "一般人員"}</div>
                 </div>
-                <button onClick={signOut} className="ml-auto text-white/40 hover:text-white text-xs px-2 py-1 rounded hover:bg-white/10">登出</button>
+                <button onClick={signOut} className="ml-auto text-[#4A70A9]/70 hover:text-[#4A70A9] text-xs px-2 py-1 rounded hover:bg-white/10">登出</button>
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <button onClick={() => setShowChangePassword(true)} className="text-[11px] text-white/50 hover:text-white underline underline-offset-2">變更密碼</button>
+                <button onClick={() => setShowChangePassword(true)} className="text-[11px] text-[#4A70A9]/80 hover:text-[#4A70A9] underline underline-offset-2">變更密碼</button>
                 {profileError && (
                   <button onClick={refreshProfile} className="text-[11px] text-amber-400 hover:text-amber-300 underline underline-offset-2">角色讀取失敗，點此重試</button>
                 )}
@@ -917,7 +917,7 @@ function ErpApp() {
               )}
             </div>
           ) : (
-            <div className="text-xs text-white/40">印表機 · 事務機 銷售與租賃</div>
+            <div className="text-xs text-[#4A70A9]/70">印表機 · 事務機 銷售與租賃</div>
           )}
         </div>
       </aside>
