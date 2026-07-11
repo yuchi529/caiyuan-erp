@@ -616,7 +616,7 @@ function LoginScreen() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');`}</style>
       <div className="w-full max-w-sm bg-white rounded-xl border border-slate-100 shadow-sm p-6">
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center p-1">
+          <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center p-1">
             <img src={LOGO_DATA_URI} alt="彩苑科技 logo" className="w-full h-full object-contain" />
           </div>
           <div>
@@ -633,7 +633,7 @@ function LoginScreen() {
             <input type="password" required minLength={6} className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="至少 6 碼" />
           </Field>
           {err && <div className="text-xs text-rose-500">{err}</div>}
-          <button type="submit" disabled={busy} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
+          <button type="submit" disabled={busy} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
             {busy ? "處理中…" : "登入"}
           </button>
         </form>
@@ -674,7 +674,7 @@ function ChangePasswordModal({ onClose }) {
       {ok ? (
         <div className="space-y-4">
           <p className="text-sm text-teal-600">密碼已變更成功。</p>
-          <button onClick={onClose} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">關閉</button>
+          <button onClick={onClose} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">關閉</button>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-3">
@@ -687,7 +687,7 @@ function ChangePasswordModal({ onClose }) {
           {err && <div className="text-xs text-rose-500">{err}</div>}
           <div className="flex gap-2 pt-1">
             <button type="button" onClick={onClose} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
-            <button type="submit" disabled={busy} className="flex-1 bg-[#8FABD4] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
+            <button type="submit" disabled={busy} className="flex-1 bg-[#1C4D8D] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
               {busy ? "處理中…" : "確認變更"}
             </button>
           </div>
@@ -969,7 +969,7 @@ function Dashboard({ stats, salesOrders, leases, custName }) {
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard icon={Banknote} label="本日營業收入" value={fmt(stats.todayRevenue)} tone="bg-indigo-600" sub={`銷售單 ${fmt(stats.todayPosTotal)}（${stats.todayPosCount} 筆）· 銷售訂單 ${fmt(stats.todaySalesOrderTotal)}`} />
-        <StatCard icon={TrendingUp} label="本月銷售額" value={fmt(stats.salesTotal)} tone="bg-[#8FABD4]" />
+        <StatCard icon={TrendingUp} label="本月銷售額" value={fmt(stats.salesTotal)} tone="bg-[#1C4D8D]" />
         <StatCard icon={TrendingDown} label="本月採購額" value={fmt(stats.purchaseTotal)} tone="bg-teal-600" />
         <StatCard icon={Printer} label="租賃中機台數" value={stats.activeLeases} tone="bg-amber-600" />
         <StatCard icon={Gauge} label="本期應收租金(含計數)" value={fmt(stats.rentDue)} tone="bg-emerald-600" />
@@ -1090,7 +1090,7 @@ function CsvImportModal({ title, hint, headers, sampleRows, previewCols, normali
           <button onClick={() => downloadCsvTemplate(headers, sampleRows, templateFileName)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
             <Download size={14} /> 下載匯入範本
           </button>
-          <label className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] cursor-pointer">
+          <label className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] cursor-pointer">
             <Upload size={14} /> 選擇 CSV 檔案
             <input type="file" accept=".csv,text/csv" className="hidden" onChange={handleFile} />
           </label>
@@ -1151,7 +1151,7 @@ function CsvImportModal({ title, hint, headers, sampleRows, previewCols, normali
           <button
             onClick={confirm}
             disabled={validCount === 0}
-            className="flex-1 bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
+            className="flex-1 bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
           >
             確認匯入（{validCount} 筆）
           </button>
@@ -1373,7 +1373,7 @@ function CustomersTab({ customers, setCustomers }) {
           <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
             <Upload size={15} /> 批次匯入
           </button>
-          <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+          <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
             <Plus size={15} /> 新增客戶
           </button>
         </div>
@@ -1435,7 +1435,7 @@ function CustomersTab({ customers, setCustomers }) {
               <option>一般</option><option>租賃</option><option>一般+租賃</option>
             </select>
           </Field>
-          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
+          <button onClick={save} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
         </Modal>
       )}
 
@@ -1575,7 +1575,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
             <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
               <Upload size={15} /> 批次匯入
             </button>
-            <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+            <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
               <Plus size={15} /> 新增商品
             </button>
           </div>
@@ -1583,7 +1583,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
         <div className="flex items-center flex-wrap gap-1.5">
           {cats.map((c) => (
             <div key={c} className="group relative">
-              <button onClick={() => setCat(c)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${cat === c ? "bg-[#8FABD4] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}>
+              <button onClick={() => setCat(c)} className={`px-3 py-1.5 rounded-lg text-xs font-medium ${cat === c ? "bg-[#1C4D8D] text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}>
                 {c}
               </button>
               {c !== "全部" && !products.some((p) => p.category === c) && (
@@ -1607,7 +1607,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
                 onChange={(e) => setNewCatName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") submitNewCategory(); if (e.key === "Escape") { setAddingCat(false); setNewCatName(""); } }}
               />
-              <button onClick={submitNewCategory} className="text-xs bg-[#8FABD4] text-white rounded-lg px-2 py-1.5">新增</button>
+              <button onClick={submitNewCategory} className="text-xs bg-[#1C4D8D] text-white rounded-lg px-2 py-1.5">新增</button>
               <button onClick={() => { setAddingCat(false); setNewCatName(""); }} className="text-slate-300 hover:text-slate-600"><X size={14} /></button>
             </div>
           ) : (
@@ -1691,7 +1691,7 @@ function ProductsTab({ products, setProducts, categories, setCategories }) {
             <Field label="單位"><input className={inputCls} value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} /></Field>
             <Field label="安全庫存"><input type="number" className={inputCls} value={form.reorder} onChange={(e) => setForm({ ...form, reorder: e.target.value })} /></Field>
           </div>
-          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
+          <button onClick={save} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
         </Modal>
       )}
 
@@ -1854,7 +1854,7 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
           <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
             <Upload size={15} /> 批次匯入
           </button>
-          <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+          <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
             <Plus size={15} /> 新增銷售訂單
           </button>
         </div>
@@ -1931,7 +1931,7 @@ function SalesTab({ salesOrders, setSalesOrders, customers, products, custName, 
           <div className="text-right font-semibold mt-4 mb-2 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
             合計：{fmt(form.items.reduce((a, i) => a + i.qty * i.price, 0))}
           </div>
-          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立訂單</button>
+          <button onClick={save} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立訂單</button>
         </Modal>
       )}
 
@@ -2085,7 +2085,7 @@ function PosTab({ posSales, setPosSales, customers, products, setProducts, custN
         <button
           onClick={checkout}
           disabled={!canCheckout}
-          className="w-full mt-3 bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+          className="w-full mt-3 bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
         >
           <CreditCard size={15} /> 完成結帳
         </button>
@@ -2177,7 +2177,7 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
             <h3 className="font-semibold text-[#0A3981]">銷售單預覽</h3>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
+            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
               <Receipt size={15} /> 列印 / 另存 PDF
             </button>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-2"><X size={18} /></button>
@@ -2425,7 +2425,7 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
           <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋採購編號、供應商、商品或狀態" className={inputCls + " pl-8"} />
         </div>
-        <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+        <button onClick={() => { openAdd(); setModal(true); }} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
           <Plus size={15} /> 新增採購單
         </button>
       </div>
@@ -2498,7 +2498,7 @@ function PurchaseTab({ purchaseOrders, setPurchaseOrders, products, setProducts,
           <div className="text-right font-semibold mt-4 mb-2 tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
             合計：{fmt(form.items.reduce((a, i) => a + i.qty * i.cost, 0))}
           </div>
-          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立採購單</button>
+          <button onClick={save} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]">建立採購單</button>
         </Modal>
       )}
     </div>
@@ -2597,7 +2597,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
             <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋客戶、機型、序號或狀態" className={inputCls + " pl-8"} />
           </div>
-          <button onClick={() => { openAdd(); }} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] shrink-0">
+          <button onClick={() => { openAdd(); }} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049] shrink-0">
             <Plus size={15} /> 新增租賃合約
           </button>
         </div>
@@ -2717,7 +2717,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
               </>
             )}
           </div>
-          <button onClick={save} className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium mt-3 hover:bg-[#142049]">儲存合約</button>
+          <button onClick={save} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium mt-3 hover:bg-[#142049]">儲存合約</button>
         </Modal>
       )}
 
@@ -2735,7 +2735,7 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
           </div>
           <div className="flex gap-2">
             <button onClick={saveMeterReading} className="flex-1 border border-slate-200 text-slate-600 rounded-lg py-2.5 text-sm font-medium hover:bg-slate-50">僅更新讀數</button>
-            <button onClick={confirmBilling} className="flex-1 flex items-center justify-center gap-1.5 bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]"><CheckCircle2 size={14} /> 確認出帳</button>
+            <button onClick={confirmBilling} className="flex-1 flex items-center justify-center gap-1.5 bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049]"><CheckCircle2 size={14} /> 確認出帳</button>
           </div>
           <button onClick={() => doPrint(meterModal, meterVal)} className="w-full flex items-center justify-center gap-1.5 border border-slate-200 text-slate-600 rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-slate-50">
             <Receipt size={14} /> 列印本期請款單
@@ -2775,7 +2775,7 @@ function InvoicePreview({ data, onClose }) {
             <h3 className="font-semibold text-[#0A3981]">請款單預覽</h3>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
+            <button onClick={handlePrint} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]">
               <Receipt size={15} /> 列印 / 另存 PDF
             </button>
             <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-2"><X size={18} /></button>
@@ -3196,7 +3196,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
             </div>
             <div className="flex gap-2">
               <button onClick={() => setSelectedIds([])} className="px-3 py-1.5 rounded-lg text-sm border border-slate-200 text-slate-500 hover:bg-slate-50">取消選取</button>
-              <button onClick={openReconcile} className="px-4 py-1.5 rounded-lg text-sm text-white bg-[#8FABD4] hover:bg-[#142049] flex items-center gap-1.5">
+              <button onClick={openReconcile} className="px-4 py-1.5 rounded-lg text-sm text-white bg-[#1C4D8D] hover:bg-[#142049] flex items-center gap-1.5">
                 <ArrowRightLeft size={14} /> 執行沖帳
               </button>
             </div>
@@ -3301,7 +3301,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
             <button
               onClick={submitReconcile}
               disabled={diff !== 0 || totalAlloc <= 0}
-              className="w-full bg-[#8FABD4] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
+              className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium hover:bg-[#142049] disabled:opacity-40"
             >
               確認沖帳
             </button>
@@ -3348,7 +3348,7 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
           <Field label="日期">
             <input type="date" className={inputCls} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
           </Field>
-          <button onClick={add} className="h-[38px] rounded-lg text-sm text-white bg-[#8FABD4] hover:bg-[#142049] flex items-center justify-center gap-1.5">
+          <button onClick={add} className="h-[38px] rounded-lg text-sm text-white bg-[#1C4D8D] hover:bg-[#142049] flex items-center justify-center gap-1.5">
             <Plus size={14} /> 新增
           </button>
         </div>
@@ -3418,7 +3418,7 @@ function StaffTab({ currentUserId }) {
         <h3 className="text-sm text-slate-500">共 {rows.length} 位人員帳號</h3>
         <button
           onClick={() => setModal({ mode: "add" })}
-          className="flex items-center gap-1.5 bg-[#8FABD4] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]"
+          className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#142049]"
         >
           <Plus size={15} /> 新增人員
         </button>
@@ -3585,7 +3585,7 @@ function StaffFormModal({ mode, row, onClose, onSaved }) {
         {err && <div className="text-xs text-rose-500">{err}</div>}
         <div className="flex gap-2 pt-1">
           <button type="button" onClick={onClose} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
-          <button type="submit" disabled={busy} className="flex-1 bg-[#8FABD4] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
+          <button type="submit" disabled={busy} className="flex-1 bg-[#1C4D8D] text-white rounded-lg py-2 text-sm font-medium hover:bg-[#142049] disabled:bg-slate-300">
             {busy ? "處理中…" : isEdit ? "儲存變更" : "建立帳號"}
           </button>
         </div>
