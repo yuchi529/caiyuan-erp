@@ -1252,7 +1252,9 @@ function CustomersTab({ customers, setCustomers }) {
     setModal(null);
   };
   const remove = (id) => setCustomers(customers.filter((c) => c.id !== id));
-  const filtered = customers.filter((c) => c.name.includes(q) || c.contact.includes(q) || (c.taxId || "").includes(q));
+  const filtered = customers.filter((c) =>
+    c.name.includes(q) || c.contact.includes(q) || (c.taxId || "").includes(q) || (c.phone || "").includes(q)
+  );
 
   /* -------- 批次匯入 -------- */
   const normalizeCustomerRows = (data) => {
@@ -1292,7 +1294,7 @@ function CustomersTab({ customers, setCustomers }) {
       <div className="flex items-center justify-between p-4 border-b border-slate-100 flex-wrap gap-2">
         <div className="relative w-72">
           <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋客戶名稱、聯絡人或統一編號" className={inputCls + " pl-8"} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋客戶名稱、聯絡人、電話或統一編號" className={inputCls + " pl-8"} />
         </div>
         <div className="flex gap-2">
           <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
