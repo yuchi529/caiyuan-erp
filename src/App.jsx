@@ -24,12 +24,58 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 function createSupabaseLite(url, anonKey) {
   let session = null; // 只存在記憶體中（不用 localStorage），重新整理頁面就需要重新登入
   let authListeners = [];
+  let refreshPromise = null;
 
-  const authHeaders = () => ({
-    apikey: anonKey,
-    Authorization: `Bearer ${session?.access_token || anonKey}`,
-    "Content-Type": "application/json",
-  });
+  const setSession = (s, event) => {
+    session = s;
+    authListeners.forEach((cb) => cb(event, session));
+  };
+
+  const doRefresh = async () => {
+    if (!session?.refresh_token) return;
+    try {
+      const res = await fetch(`${url}/auth/v1/token?grant_type=refresh_token`, {
+        method: "POST",
+        headers: { apikey: anonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: session.refresh_token }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        // refresh token 也失效了（例如太久沒用），只能請使用者重新登入
+        setSession(null, "SIGNED_OUT");
+        return;
+      }
+      setSession(
+        {
+          access_token: body.access_token,
+          refresh_token: body.refresh_token,
+          user: body.user,
+          expires_at: Date.now() + (body.expires_in || 3600) * 1000,
+        },
+        "TOKEN_REFRESHED"
+      );
+    } catch (e) {
+      // 網路暫時性錯誤：不清掉 session，下次請求再試一次即可
+      console.error("[supabase] token 刷新失敗", e);
+    }
+  };
+
+  // 每次要打 API 前先確認 token 沒有快過期（剩不到 60 秒就先刷新），同一時間只會發一次刷新請求
+  const ensureFreshSession = async () => {
+    if (!session?.expires_at) return;
+    if (Date.now() < session.expires_at - 60000) return;
+    if (!refreshPromise) refreshPromise = doRefresh().finally(() => { refreshPromise = null; });
+    await refreshPromise;
+  };
+
+  const authHeaders = async () => {
+    await ensureFreshSession();
+    return {
+      apikey: anonKey,
+      Authorization: `Bearer ${session?.access_token || anonKey}`,
+      "Content-Type": "application/json",
+    };
+  };
 
   const parseErr = async (res) => {
     try {
@@ -47,7 +93,7 @@ function createSupabaseLite(url, anonKey) {
       return parts.join("&");
     };
     const runSelect = async () => {
-      const res = await fetch(`${url}/rest/v1/${table}?${buildQs()}`, { headers: authHeaders() });
+      const res = await fetch(`${url}/rest/v1/${table}?${buildQs()}`, { headers: await authHeaders() });
       if (!res.ok) return { data: null, error: await parseErr(res) };
       return { data: await res.json(), error: null };
     };
@@ -72,7 +118,7 @@ function createSupabaseLite(url, anonKey) {
       async insert(rows) {
         const res = await fetch(`${url}/rest/v1/${table}`, {
           method: "POST",
-          headers: { ...authHeaders(), Prefer: "return=minimal" },
+          headers: { ...(await authHeaders()), Prefer: "return=minimal" },
           body: JSON.stringify(rows),
         });
         if (!res.ok) return { error: await parseErr(res) };
@@ -81,7 +127,7 @@ function createSupabaseLite(url, anonKey) {
       async upsert(rows) {
         const res = await fetch(`${url}/rest/v1/${table}`, {
           method: "POST",
-          headers: { ...authHeaders(), Prefer: "resolution=merge-duplicates,return=minimal" },
+          headers: { ...(await authHeaders()), Prefer: "resolution=merge-duplicates,return=minimal" },
           body: JSON.stringify(rows),
         });
         if (!res.ok) return { error: await parseErr(res) };
@@ -94,7 +140,7 @@ function createSupabaseLite(url, anonKey) {
             const list = values.map((v) => `"${v}"`).join(",");
             const res = await fetch(`${url}/rest/v1/${table}?${col}=in.(${list})`, {
               method: "DELETE",
-              headers: { ...authHeaders(), Prefer: "return=minimal" },
+              headers: { ...(await authHeaders()), Prefer: "return=minimal" },
             });
             if (!res.ok) return { error: await parseErr(res) };
             return { error: null };
@@ -114,8 +160,15 @@ function createSupabaseLite(url, anonKey) {
       });
       const body = await res.json();
       if (!res.ok) return { error: { message: body.error_description || body.msg || "登入失敗" } };
-      session = { access_token: body.access_token, refresh_token: body.refresh_token, user: body.user };
-      authListeners.forEach((cb) => cb("SIGNED_IN", session));
+      setSession(
+        {
+          access_token: body.access_token,
+          refresh_token: body.refresh_token,
+          user: body.user,
+          expires_at: Date.now() + (body.expires_in || 3600) * 1000,
+        },
+        "SIGNED_IN"
+      );
       return { error: null };
     },
     async signUp({ email, password, options }) {
@@ -129,6 +182,7 @@ function createSupabaseLite(url, anonKey) {
       return { error: null };
     },
     async getSession() {
+      await ensureFreshSession();
       return { data: { session } };
     },
     onAuthStateChange(cb) {
@@ -136,12 +190,13 @@ function createSupabaseLite(url, anonKey) {
       return { data: { subscription: { unsubscribe: () => { authListeners = authListeners.filter((f) => f !== cb); } } } };
     },
     async signOut() {
-      session = null;
-      authListeners.forEach((cb) => cb("SIGNED_OUT", null));
+      setSession(null, "SIGNED_OUT");
       return { error: null };
     },
     async updateUser({ password, data }) {
       if (!session) return { error: { message: "尚未登入" } };
+      await ensureFreshSession();
+      if (!session) return { error: { message: "登入已逾期，請重新登入後再試一次" } };
       const body = {};
       if (password) body.password = password;
       if (data) body.data = data;
@@ -151,7 +206,13 @@ function createSupabaseLite(url, anonKey) {
         body: JSON.stringify(body),
       });
       const resBody = await res.json();
-      if (!res.ok) return { error: { message: resBody.error_description || resBody.msg || "更新失敗" } };
+      if (!res.ok) {
+        if (resBody.code === "session_not_found" || /session/i.test(resBody.msg || "")) {
+          setSession(null, "SIGNED_OUT");
+          return { error: { message: "登入已逾期，請重新登入後再試一次" } };
+        }
+        return { error: { message: resBody.error_description || resBody.msg || "更新失敗" } };
+      }
       session = { ...session, user: resBody };
       return { data: { user: resBody }, error: null };
     },
