@@ -993,7 +993,7 @@ function ErpApp() {
           {tab === "products" && <ProductsTab products={products} setProducts={setProducts} categories={categories} setCategories={setCategories} />}
           {tab === "sales" && <SalesTab salesOrders={salesOrders} setSalesOrders={setSalesOrders} customers={customers} products={products} custName={custName} prodName={prodName} addArRecord={addArRecord} />}
           {tab === "pos" && <PosTab posSales={posSales} setPosSales={setPosSales} customers={customers} products={products} setProducts={setProducts} custName={custName} prodName={prodName} />}
-          {tab === "sales_history" && <SalesHistoryTab salesOrders={salesOrders} posSales={posSales} customers={customers} custName={custName} prodName={prodName} />}
+          {tab === "sales_history" && <SalesHistoryTab salesOrders={salesOrders} setSalesOrders={setSalesOrders} posSales={posSales} customers={customers} products={products} custName={custName} prodName={prodName} addArRecord={addArRecord} />}
           {tab === "purchase" && <PurchaseTab purchaseOrders={purchaseOrders} setPurchaseOrders={setPurchaseOrders} products={products} setProducts={setProducts} prodName={prodName} />}
           {tab === "lease" && <LeaseTab leases={leases} setLeases={setLeases} customers={customers} custName={custName} addArRecord={addArRecord} />}
           {tab === "ar" && (
@@ -2400,12 +2400,92 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
 }
 
 /* ---------------------------------- 銷售紀錄（合併銷售訂單＋銷售單，可搜尋） ---------------------------------- */
-function SalesHistoryTab({ salesOrders, posSales, customers, custName, prodName }) {
+function SalesHistoryTab({ salesOrders, setSalesOrders, posSales, customers, products, custName, prodName, addArRecord }) {
   const [q, setQ] = useState("");
   const [type, setType] = useState("全部");
   const [customerId, setCustomerId] = useState("全部");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [importOpen, setImportOpen] = useState(false);
+
+  const resolveCustomer = (raw) => {
+    const taxId = (raw["客戶統一編號"] || raw["taxId"] || "").toString().replace(/\D/g, "");
+    const name = (raw["客戶名稱"] || raw["customerName"] || "").trim();
+    if (taxId) { const c = customers.find((c) => c.taxId === taxId); if (c) return c; }
+    if (name) { const c = customers.find((c) => c.name === name); if (c) return c; }
+    return null;
+  };
+  const resolveProduct = (raw) => {
+    const pid = (raw["商品編號"] || raw["productId"] || "").trim();
+    const pname = (raw["商品名稱"] || raw["productName"] || "").trim();
+    if (pid) { const p = products.find((p) => p.id === pid); if (p) return p; }
+    if (pname) { const p = products.find((p) => p.name === pname); if (p) return p; }
+    return null;
+  };
+
+  const normalizeHistoryRows = (data) => {
+    const prelim = data.map((raw, idx) => {
+      const groupKeyRaw = (raw["訂單編號"] || raw["orderRef"] || "").trim();
+      const groupKey = groupKeyRaw || `__row_${idx}`;
+      let date = (raw["日期"] || raw["date"] || "").trim() || todayStr();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) date = todayStr();
+
+      const customer = resolveCustomer(raw);
+      const product = resolveProduct(raw);
+      const qty = Number((raw["數量"] || raw["qty"] || "").toString().replace(/[^0-9.\-]/g, ""));
+      const priceRaw = (raw["單價"] || raw["price"] || "").toString().trim();
+      const price = priceRaw ? Number(priceRaw.replace(/[^0-9.\-]/g, "")) : product?.price;
+      let status = (raw["狀態"] || raw["status"] || "已出貨").trim();
+      if (!SALES_STATUSES.includes(status)) status = "已出貨";
+
+      const errors = [];
+      if (!customer) errors.push("找不到客戶（統一編號或名稱）");
+      if (!product) errors.push("找不到商品（編號或名稱）");
+      if (!qty || Number.isNaN(qty) || qty <= 0) errors.push("數量須為大於 0 的數字");
+      if (price === undefined || Number.isNaN(price) || price < 0) errors.push("單價須為數字");
+
+      return {
+        groupKey, groupKeyRaw, date, status,
+        customerId: customer?.id, customerName: customer?.name,
+        productId: product?.id, productName: product?.name,
+        qty, price, errors,
+      };
+    });
+
+    const groups = {};
+    prelim.forEach((r) => { (groups[r.groupKey] = groups[r.groupKey] || []).push(r); });
+    Object.values(groups).forEach((rowsInGroup) => {
+      const ref = rowsInGroup.find((r) => r.errors.length === 0) || rowsInGroup[0];
+      rowsInGroup.forEach((r) => {
+        if (r.errors.length > 0 || r === ref) return;
+        if (r.customerId !== ref.customerId) r.errors.push("與同單號其他列客戶不一致");
+        if (r.date !== ref.date) r.errors.push("與同單號其他列日期不一致");
+        if (r.status !== ref.status) r.errors.push("與同單號其他列狀態不一致");
+      });
+    });
+
+    return prelim.map((r) => ({ ...r, ok: r.errors.length === 0, include: r.errors.length === 0 }));
+  };
+
+  const confirmImportHistory = (toAddRows) => {
+    const groups = {};
+    toAddRows.forEach((r) => { (groups[r.groupKey] = groups[r.groupKey] || []).push(r); });
+    const newOrders = Object.values(groups).map((rowsInGroup) => ({
+      id: nextId("SO"),
+      date: rowsInGroup[0].date,
+      customerId: rowsInGroup[0].customerId,
+      status: rowsInGroup[0].status,
+      items: rowsInGroup.map((r) => ({ productId: r.productId, qty: r.qty, price: r.price })),
+    }));
+    setSalesOrders([...newOrders, ...salesOrders]);
+    newOrders.forEach((o) => {
+      if (o.status === "已出貨") {
+        const total = o.items.reduce((a, i) => a + i.qty * i.price, 0);
+        addArRecord({ sourceType: "銷售", sourceNo: o.id, customerId: o.customerId, docDate: o.date, dueDate: addMonths(o.date, 1), amount: total });
+      }
+    });
+    setImportOpen(false);
+  };
 
   const records = useMemo(() => {
     const orders = salesOrders.map((o) => ({
@@ -2456,6 +2536,12 @@ function SalesHistoryTab({ salesOrders, posSales, customers, custName, prodName 
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold text-slate-700">查詢條件</h3>
+          <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
+            <Upload size={15} /> 批次匯入
+          </button>
+        </div>
         <div className="relative">
           <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋單號、客戶、商品或狀態／付款方式" className={inputCls + " pl-8"} />
@@ -2531,6 +2617,27 @@ function SalesHistoryTab({ salesOrders, posSales, customers, custName, prodName 
           </table>
         </div>
       </div>
+
+      {importOpen && (
+        <CsvImportModal
+          title="批次匯入銷售紀錄（併入銷售訂單，CSV）"
+          hint={<>請使用 UTF-8 編碼的 CSV 檔案，欄位標題需包含：<b className="text-slate-700">訂單編號、日期、客戶統一編號、客戶名稱、商品編號、商品名稱、數量、單價、狀態</b>。同一「訂單編號」的多列會合併成同一張訂單的多個品項；訂單編號留空則每列各自成單。客戶可用統一編號或名稱比對，商品可用編號或名稱比對；單價留空則帶入商品目前售價；狀態預設為「已出貨」（適合用來補登過去的銷售歷史）。匯入的資料會併入「銷售訂單」。</>}
+          headers={SALES_CSV_HEADERS}
+          sampleRows={[["", "2026-06-01", "12345678", "彩苑範例股份有限公司", "P-0001", "A3彩色雷射複合機", "1", "98000", "已出貨"]]}
+          templateFileName="銷售紀錄匯入範本.csv"
+          normalizeRows={normalizeHistoryRows}
+          previewCols={[
+            { key: "groupKeyRaw", label: "訂單編號" },
+            { key: "date", label: "日期" },
+            { key: "customerName", label: "客戶" },
+            { key: "productName", label: "商品" },
+            { key: "qty", label: "數量" },
+            { key: "status", label: "狀態" },
+          ]}
+          onConfirm={confirmImportHistory}
+          onClose={() => setImportOpen(false)}
+        />
+      )}
     </div>
   );
 }
