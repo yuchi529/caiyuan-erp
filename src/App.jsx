@@ -2700,9 +2700,12 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
     return order.map((customerId) => ({ customerId, items: map[customerId] }));
   }, [leases, q, customers]);
 
+  // 租賃合約的客戶只能從「客戶管理」裡類型為「租賃」或「一般+租賃」的客戶中選擇
+  const leaseCustomers = customers.filter((c) => c.type === "租賃" || c.type === "一般+租賃");
+
   const openAdd = () => {
     setForm({
-      customerId: customers[0]?.id || "", machineName: "", serial: "", machineType: "雷射",
+      customerId: leaseCustomers[0]?.id || "", machineName: "", serial: "", machineType: "雷射",
       startDate: todayStr(), endDate: addMonths(todayStr(), 12),
       monthlyRent: 2000, meterRate: 0.7, lastMeter: 0, currentMeter: 0, status: "租賃中",
     });
@@ -2845,8 +2848,14 @@ function LeaseTab({ leases, setLeases, customers, custName, addArRecord }) {
           <div className="grid grid-cols-2 gap-3">
             <Field label="客戶">
               <select className={inputCls} value={form.customerId} onChange={(e) => setForm({ ...form, customerId: e.target.value })}>
-                {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {leaseCustomers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                {!leaseCustomers.some((c) => c.id === form.customerId) && form.customerId && (
+                  <option value={form.customerId}>{custName(form.customerId)}（類型已非租賃）</option>
+                )}
               </select>
+              {leaseCustomers.length === 0 && (
+                <div className="text-xs text-amber-500 mt-1">目前沒有類型為「租賃」或「一般+租賃」的客戶，請先到客戶管理設定客戶類型。</div>
+              )}
             </Field>
             <Field label="狀態">
               <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
