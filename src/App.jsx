@@ -811,6 +811,20 @@ function ErpApp() {
     });
   };
 
+  const [customerTypeRows, setCustomerTypeRows] = useSupabaseTable(
+    "customer_types",
+    DEFAULT_CUSTOMER_TYPES.map((name) => ({ name })),
+    "name"
+  );
+  const customerTypes = customerTypeRows.map((r) => r.name);
+  const setCustomerTypes = (updater) => {
+    setCustomerTypeRows((prevRows) => {
+      const prevNames = prevRows.map((r) => r.name);
+      const nextNames = typeof updater === "function" ? updater(prevNames) : updater;
+      return nextNames.map((name) => ({ name }));
+    });
+  };
+
   const custName = (id) => customers.find((c) => c.id === id)?.name || "—";
   const prodName = (id) => products.find((p) => p.id === id)?.name || "—";
 
@@ -972,7 +986,7 @@ function ErpApp() {
         </header>
         <div className="p-4 sm:p-8">
           {tab === "dashboard" && <Dashboard stats={stats} salesOrders={salesOrders} leases={leases} customers={customers} custName={custName} />}
-          {tab === "customers" && <CustomersTab customers={customers} setCustomers={setCustomers} />}
+          {tab === "customers" && <CustomersTab customers={customers} setCustomers={setCustomers} customerTypes={customerTypes} setCustomerTypes={setCustomerTypes} />}
           {tab === "products" && <ProductsTab products={products} setProducts={setProducts} categories={categories} setCategories={setCategories} />}
           {tab === "sales" && <SalesTab salesOrders={salesOrders} setSalesOrders={setSalesOrders} customers={customers} products={products} custName={custName} prodName={prodName} addArRecord={addArRecord} />}
           {tab === "pos" && <PosTab posSales={posSales} setPosSales={setPosSales} customers={customers} products={products} setProducts={setProducts} custName={custName} prodName={prodName} />}
@@ -1261,7 +1275,7 @@ function ProductSearchSelect({ products, value, onChange, placeholder = "搜尋�
   );
 }
 
-const CUSTOMER_TYPES = ["一般", "租賃", "一般+租賃"];
+const DEFAULT_CUSTOMER_TYPES = ["一般", "租賃", "一般+租賃"];
 const CUSTOMER_CSV_HEADERS = ["客戶名稱", "統一編號", "發票抬頭", "聯絡人", "電話", "市話", "傳真", "電子郵件", "LINE ID", "郵遞區號", "地址", "類型", "備註"];
 
 // 可搜尋的客戶選擇器：value 為空字串時代表「現場客戶（不指定）」
@@ -1336,15 +1350,17 @@ function CustomerSearchSelect({ customers, value, onChange, placeholder = "搜�
   );
 }
 
-function CustomersTab({ customers, setCustomers }) {
+function CustomersTab({ customers, setCustomers, customerTypes, setCustomerTypes }) {
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({});
   const [q, setQ] = useState("");
   const [typeFilter, setTypeFilter] = useState("全部");
   const [taxIdError, setTaxIdError] = useState("");
   const [importOpen, setImportOpen] = useState(false);
+  const [addingType, setAddingType] = useState(false);
+  const [newTypeName, setNewTypeName] = useState("");
 
-  const openAdd = () => { setForm({ name: "", taxId: "", invoiceTitle: "", contact: "", phone: "", landline: "", fax: "", email: "", lineId: "", postalCode: "", address: "", type: "一般", note: "" }); setTaxIdError(""); setModal("add"); };
+  const openAdd = () => { setForm({ name: "", taxId: "", invoiceTitle: "", contact: "", phone: "", landline: "", fax: "", email: "", lineId: "", postalCode: "", address: "", type: customerTypes[0] || "一般", note: "" }); setTaxIdError(""); setModal("add"); };
   const openEdit = (c) => { setForm(c); setTaxIdError(""); setModal("edit"); };
   const validateTaxId = (taxId, selfId) => {
     if (!taxId) return ""; // 非必填，留空直接通過
@@ -1361,6 +1377,24 @@ function CustomersTab({ customers, setCustomers }) {
     setModal(null);
   };
   const remove = (id) => setCustomers(customers.filter((c) => c.id !== id));
+  const submitNewType = () => {
+    const t = newTypeName.trim();
+    if (t && !customerTypes.includes(t)) setCustomerTypes((prev) => [...prev, t]);
+    setNewTypeName("");
+    setAddingType(false);
+  };
+  const removeType = (t) => {
+    if (customers.some((c) => c.type === t)) return; // 還有客戶使用中，不能刪
+    setCustomerTypes((prev) => prev.filter((x) => x !== t));
+    if (typeFilter === t) setTypeFilter("全部");
+  };
+
+  // customers 資料裡如果出現清單中沒有的類型（例如舊資料或外部匯入），自動併入清單，避免類型消失或被誤判
+  useEffect(() => {
+    const fromData = Array.from(new Set(customers.map((c) => c.type).filter(Boolean)));
+    const missing = fromData.filter((t) => !customerTypes.includes(t));
+    if (missing.length > 0) setCustomerTypes((prev) => Array.from(new Set([...prev, ...missing])));
+  }, [customers]);
   const filtered = customers
     .filter((c) => typeFilter === "全部" || c.type === typeFilter)
     .filter((c) =>
@@ -1383,8 +1417,8 @@ function CustomersTab({ customers, setCustomers }) {
       const postalCode = (raw["郵遞區號"] || raw["postalCode"] || "").trim();
       const address = (raw["地址"] || raw["address"] || "").trim();
       const note = (raw["備註"] || raw["note"] || "").trim();
-      let type = (raw["類型"] || raw["type"] || "一般").trim();
-      if (!CUSTOMER_TYPES.includes(type)) type = "一般";
+      let type = (raw["類型"] || raw["type"] || "").trim();
+      if (!customerTypes.includes(type)) type = customerTypes[0] || "一般";
 
       const errors = [];
       if (!name) errors.push("缺少客戶名稱");
@@ -1411,26 +1445,63 @@ function CustomersTab({ customers, setCustomers }) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
-      <div className="flex items-center justify-between p-4 border-b border-slate-100 flex-wrap gap-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative w-72">
-            <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋客戶名稱、聯絡人、電話或統一編號" className={inputCls + " pl-8"} />
+      <div className="p-4 border-b border-slate-100 space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative w-72">
+              <Search size={14} className="absolute left-3 top-2.5 text-slate-300" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋客戶名稱、聯絡人、電話或統一編號" className={inputCls + " pl-8"} />
+            </div>
+            <div className="w-40">
+              <select className={inputCls} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+                <option value="全部">全部類型</option>
+                {customerTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
           </div>
-          <div className="w-40">
-            <select className={inputCls} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-              <option value="全部">全部類型</option>
-              {CUSTOMER_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
+          <div className="flex gap-2">
+            <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
+              <Upload size={15} /> 批次匯入
+            </button>
+            <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
+              <Plus size={15} /> 新增客戶
+            </button>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setImportOpen(true)} className="flex items-center gap-1.5 border border-slate-200 text-slate-600 text-sm px-3.5 py-2 rounded-lg hover:bg-slate-50">
-            <Upload size={15} /> 批次匯入
-          </button>
-          <button onClick={openAdd} className="flex items-center gap-1.5 bg-[#1C4D8D] text-white text-sm px-3.5 py-2 rounded-lg hover:bg-[#142049]">
-            <Plus size={15} /> 新增客戶
-          </button>
+        <div className="flex items-center flex-wrap gap-1.5">
+          <span className="text-xs text-slate-400 mr-1">客戶類型管理：</span>
+          {customerTypes.map((t) => (
+            <div key={t} className="group relative">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-500">{t}</span>
+              {!customers.some((c) => c.type === t) && (
+                <button
+                  onClick={() => removeType(t)}
+                  title="刪除此類型（無客戶使用中）"
+                  className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-300 text-white text-[10px] leading-4 opacity-0 group-hover:opacity-100 hover:bg-rose-500"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
+          {addingType ? (
+            <div className="flex items-center gap-1">
+              <input
+                autoFocus
+                className="text-xs border border-slate-200 rounded-lg px-2 py-1 w-28"
+                placeholder="新類型名稱"
+                value={newTypeName}
+                onChange={(e) => setNewTypeName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") submitNewType(); if (e.key === "Escape") { setAddingType(false); setNewTypeName(""); } }}
+              />
+              <button onClick={submitNewType} className="text-xs bg-[#1C4D8D] text-white rounded-lg px-2 py-1">新增</button>
+              <button onClick={() => { setAddingType(false); setNewTypeName(""); }} className="text-slate-300 hover:text-slate-600"><X size={14} /></button>
+            </div>
+          ) : (
+            <button onClick={() => setAddingType(true)} className="px-2 py-1 rounded-lg text-xs font-medium border border-dashed border-slate-300 text-slate-400 hover:border-slate-400 hover:text-slate-600 flex items-center gap-1">
+              <Plus size={12} /> 新增類型
+            </button>
+          )}
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -1503,7 +1574,7 @@ function CustomersTab({ customers, setCustomers }) {
           <Field label="地址"><input className={inputCls} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
           <Field label="客戶類型">
             <select className={inputCls} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-              <option>一般</option><option>租賃</option><option>一般+租賃</option>
+              {customerTypes.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </Field>
           <Field label="備註">
