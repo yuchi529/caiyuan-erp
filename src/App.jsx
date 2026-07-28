@@ -2962,6 +2962,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
   const [q, setQ] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const [allocations, setAllocations] = useState({});
   const [method, setMethod] = useState("匯款");
@@ -3073,6 +3074,12 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
     setShowModal(false);
   };
 
+  const removeAr = (id) => {
+    setArRecords((prev) => prev.filter((a) => a.id !== id));
+    setSelectedIds((prev) => prev.filter((x) => x !== id));
+    setDeleteTarget(null);
+  };
+
   return (
     <div className="space-y-4 pb-20">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -3134,6 +3141,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
                 <th className="px-3 py-2.5 font-medium text-right">未收餘額</th>
                 <th className="px-3 py-2.5 font-medium">帳齡</th>
                 <th className="px-3 py-2.5 font-medium">狀態</th>
+                <th className="px-3 py-2.5 font-medium"></th>
               </tr>
             </thead>
             <tbody>
@@ -3176,11 +3184,14 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
                     <td className="px-3 py-2.5">
                       <Badge tone={a.status === "已結清" ? "green" : a.status === "部分收款" ? "amber" : "red"}>{a.status}</Badge>
                     </td>
+                    <td className="px-3 py-2.5">
+                      <button onClick={() => setDeleteTarget(a)} className="text-slate-400 hover:text-rose-500" title="刪除"><Trash2 size={14} /></button>
+                    </td>
                   </tr>
                 );
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={10} className="px-3 py-8 text-center text-sm text-slate-400">沒有符合條件的應收帳款</td></tr>
+                <tr><td colSpan={11} className="px-3 py-8 text-center text-sm text-slate-400">沒有符合條件的應收帳款</td></tr>
               )}
             </tbody>
           </table>
@@ -3345,6 +3356,24 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
           </div>
         </Modal>
       )}
+
+      {deleteTarget && (
+        <Modal title="刪除應收帳款" onClose={() => setDeleteTarget(null)}>
+          <p className="text-sm text-slate-600 mb-2">
+            確定要刪除單號 <span className="font-medium text-slate-800">{deleteTarget.sourceNo}</span>（{deleteTarget.id}）這筆應收帳款嗎？
+          </p>
+          {deleteTarget.paidAmount > 0 && (
+            <p className="text-xs text-rose-500 mb-4">
+              注意：這筆單據已有收款紀錄（已收 {fmt(deleteTarget.paidAmount)}），刪除後這筆收款紀錄也會一併消失，僅會保留沖帳歷史中原有的分配紀錄，請先確認金流已妥善處理。
+            </p>
+          )}
+          <p className="text-xs text-slate-400 mb-4">此動作無法復原。</p>
+          <div className="flex gap-2">
+            <button onClick={() => setDeleteTarget(null)} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
+            <button onClick={() => removeAr(deleteTarget.id)} className="flex-1 bg-rose-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-rose-700">確定刪除</button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
@@ -3352,6 +3381,7 @@ function ArTab({ arRecords, setArRecords, customers, custName, prepayments, setP
 /* ---------------------------------- 預收款管理 ---------------------------------- */
 function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
   const [form, setForm] = useState({ customerId: customers[0]?.id || "", amount: "", date: todayStr(), note: "" });
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const add = () => {
     if (!form.amount || Number(form.amount) <= 0) return;
@@ -3360,6 +3390,11 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
       ...prepayments,
     ]);
     setForm({ ...form, amount: "", note: "" });
+  };
+
+  const remove = (id) => {
+    setPrepayments((prev) => prev.filter((p) => p.id !== id));
+    setDeleteTarget(null);
   };
 
   const totalBalance = prepayments.reduce((s, p) => s + p.balance, 0);
@@ -3404,6 +3439,7 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
                 <th className="px-4 py-2.5 font-medium text-right">原始金額</th>
                 <th className="px-4 py-2.5 font-medium text-right">剩餘餘額</th>
                 <th className="px-4 py-2.5 font-medium">備註</th>
+                <th className="px-4 py-2.5 font-medium"></th>
               </tr>
             </thead>
             <tbody>
@@ -3414,15 +3450,36 @@ function PrepayTab({ prepayments, setPrepayments, customers, custName }) {
                   <td className="px-4 py-2.5 text-right tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.amount)}</td>
                   <td className={`px-4 py-2.5 text-right font-semibold tabular-nums ${p.balance > 0 ? "text-[#0A3981]" : "text-slate-300"}`} style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{fmt(p.balance)}</td>
                   <td className="px-4 py-2.5 text-slate-500">{p.note}</td>
+                  <td className="px-4 py-2.5">
+                    <button onClick={() => setDeleteTarget(p)} className="text-slate-400 hover:text-rose-500" title="刪除"><Trash2 size={14} /></button>
+                  </td>
                 </tr>
               ))}
               {prepayments.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-400">尚無預收款紀錄</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-400">尚無預收款紀錄</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {deleteTarget && (
+        <Modal title="刪除預收款" onClose={() => setDeleteTarget(null)}>
+          <p className="text-sm text-slate-600 mb-2">
+            確定要刪除 <span className="font-medium text-slate-800">{custName(deleteTarget.customerId)}</span> 這筆預收款（原始金額 {fmt(deleteTarget.amount)}）嗎？
+          </p>
+          {deleteTarget.balance < deleteTarget.amount && (
+            <p className="text-xs text-rose-500 mb-4">
+              注意：這筆預收款已被使用過部分金額（目前剩餘 {fmt(deleteTarget.balance)}），刪除後沖帳歷史中的使用紀錄仍會保留，但這筆預收款本身將完全消失，請先確認金流已妥善處理。
+            </p>
+          )}
+          <p className="text-xs text-slate-400 mb-4">此動作無法復原。</p>
+          <div className="flex gap-2">
+            <button onClick={() => setDeleteTarget(null)} className="flex-1 border border-slate-200 rounded-lg py-2 text-sm text-slate-600 hover:bg-slate-50">取消</button>
+            <button onClick={() => remove(deleteTarget.id)} className="flex-1 bg-rose-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-rose-700">確定刪除</button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
