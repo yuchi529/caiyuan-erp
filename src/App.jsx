@@ -1227,7 +1227,7 @@ function ProductSearchSelect({ products, value, onChange, placeholder = "搜尋�
 }
 
 const CUSTOMER_TYPES = ["一般", "租賃", "一般+租賃"];
-const CUSTOMER_CSV_HEADERS = ["客戶名稱", "統一編號", "聯絡人", "電話", "地址", "類型"];
+const CUSTOMER_CSV_HEADERS = ["客戶名稱", "統一編號", "聯絡人", "電話", "市話", "傳真", "電子郵件", "LINE ID", "郵遞區號", "地址", "類型", "備註"];
 
 // 可搜尋的客戶選擇器：value 為空字串時代表「現場客戶（不指定）」
 function CustomerSearchSelect({ customers, value, onChange, placeholder = "搜尋客戶名稱、聯絡人或電話" }) {
@@ -1308,7 +1308,7 @@ function CustomersTab({ customers, setCustomers }) {
   const [taxIdError, setTaxIdError] = useState("");
   const [importOpen, setImportOpen] = useState(false);
 
-  const openAdd = () => { setForm({ name: "", taxId: "", contact: "", phone: "", address: "", type: "一般" }); setTaxIdError(""); setModal("add"); };
+  const openAdd = () => { setForm({ name: "", taxId: "", contact: "", phone: "", landline: "", fax: "", email: "", lineId: "", postalCode: "", address: "", type: "一般", note: "" }); setTaxIdError(""); setModal("add"); };
   const openEdit = (c) => { setForm(c); setTaxIdError(""); setModal("edit"); };
   const validateTaxId = (taxId, selfId) => {
     if (!taxId) return ""; // 非必填，留空直接通過
@@ -1337,7 +1337,13 @@ function CustomersTab({ customers, setCustomers }) {
       const taxId = (raw["統一編號"] || raw["taxId"] || "").toString().replace(/\D/g, "").slice(0, 8);
       const contact = (raw["聯絡人"] || raw["contact"] || "").trim();
       const phone = (raw["電話"] || raw["phone"] || "").trim();
+      const landline = (raw["市話"] || raw["landline"] || "").trim();
+      const fax = (raw["傳真"] || raw["fax"] || "").trim();
+      const email = (raw["電子郵件"] || raw["email"] || "").trim();
+      const lineId = (raw["LINE ID"] || raw["lineId"] || "").trim();
+      const postalCode = (raw["郵遞區號"] || raw["postalCode"] || "").trim();
       const address = (raw["地址"] || raw["address"] || "").trim();
+      const note = (raw["備註"] || raw["note"] || "").trim();
       let type = (raw["類型"] || raw["type"] || "一般").trim();
       if (!CUSTOMER_TYPES.includes(type)) type = "一般";
 
@@ -1350,13 +1356,15 @@ function CustomersTab({ customers, setCustomers }) {
         seenTaxIds.add(taxId);
       }
 
-      return { name, taxId, contact, phone, address, type, errors, ok: errors.length === 0, include: errors.length === 0 };
+      return { name, taxId, contact, phone, landline, fax, email, lineId, postalCode, address, note, type, errors, ok: errors.length === 0, include: errors.length === 0 };
     });
   };
 
   const confirmImportCustomers = (toAdd) => {
     const newCustomers = toAdd.map((r) => ({
-      id: nextId("C"), name: r.name, taxId: r.taxId, contact: r.contact, phone: r.phone, address: r.address, type: r.type,
+      id: nextId("C"), name: r.name, taxId: r.taxId, contact: r.contact, phone: r.phone,
+      landline: r.landline, fax: r.fax, email: r.email, lineId: r.lineId, postalCode: r.postalCode,
+      address: r.address, note: r.note, type: r.type,
     }));
     setCustomers([...customers, ...newCustomers]);
     setImportOpen(false);
@@ -1429,11 +1437,25 @@ function CustomersTab({ customers, setCustomers }) {
           </Field>
           <Field label="聯絡人"><input className={inputCls} value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} /></Field>
           <Field label="電話"><input className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
+          <Field label="市話"><input className={inputCls} value={form.landline || ""} onChange={(e) => setForm({ ...form, landline: e.target.value })} placeholder="例：02-1234-5678" /></Field>
+          <Field label="傳真"><input className={inputCls} value={form.fax || ""} onChange={(e) => setForm({ ...form, fax: e.target.value })} /></Field>
+          <Field label="電子郵件"><input type="email" className={inputCls} value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" /></Field>
+          <Field label="LINE ID"><input className={inputCls} value={form.lineId || ""} onChange={(e) => setForm({ ...form, lineId: e.target.value })} /></Field>
+          <Field label="郵遞區號"><input className={inputCls} value={form.postalCode || ""} onChange={(e) => setForm({ ...form, postalCode: e.target.value })} placeholder="例：220" /></Field>
           <Field label="地址"><input className={inputCls} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
           <Field label="客戶類型">
             <select className={inputCls} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
               <option>一般</option><option>租賃</option><option>一般+租賃</option>
             </select>
+          </Field>
+          <Field label="備註">
+            <textarea
+              className={inputCls + " resize-none"}
+              rows={3}
+              value={form.note || ""}
+              onChange={(e) => setForm({ ...form, note: e.target.value })}
+              placeholder="其他補充說明"
+            />
           </Field>
           <button onClick={save} className="w-full bg-[#1C4D8D] text-white rounded-lg py-2.5 text-sm font-medium mt-2 hover:bg-[#142049]">儲存</button>
         </Modal>
@@ -1442,9 +1464,9 @@ function CustomersTab({ customers, setCustomers }) {
       {importOpen && (
         <CsvImportModal
           title="批次匯入客戶（CSV）"
-          hint={<>請使用 UTF-8 編碼的 CSV 檔案，欄位標題需包含：<b className="text-slate-700">客戶名稱、統一編號、聯絡人、電話、地址、類型</b>。「統一編號」為選填，若有填寫則須為 8 碼數字且不可與現有客戶或檔案內其他列重複。</>}
+          hint={<>請使用 UTF-8 編碼的 CSV 檔案，欄位標題需包含：<b className="text-slate-700">客戶名稱、統一編號、聯絡人、電話、市話、傳真、電子郵件、LINE ID、郵遞區號、地址、類型、備註</b>。除「客戶名稱」外皆為選填；「統一編號」若有填寫則須為 8 碼數字且不可與現有客戶或檔案內其他列重複。</>}
           headers={CUSTOMER_CSV_HEADERS}
-          sampleRows={[["彩苑範例股份有限公司", "00000000", "陳先生", "02-1234-5678", "台北市中山區範例路1號", "一般"]]}
+          sampleRows={[["彩苑範例股份有限公司", "00000000", "陳先生", "02-1234-5678", "02-8765-4321", "02-8765-4322", "example@mail.com", "caiyuan_line", "220", "台北市中山區範例路1號", "一般", "備註內容"]]}
           templateFileName="客戶匯入範本.csv"
           normalizeRows={normalizeCustomerRows}
           previewCols={[
@@ -1452,6 +1474,7 @@ function CustomersTab({ customers, setCustomers }) {
             { key: "taxId", label: "統一編號" },
             { key: "contact", label: "聯絡人" },
             { key: "phone", label: "電話" },
+            { key: "email", label: "電子郵件" },
             { key: "type", label: "類型" },
           ]}
           onConfirm={confirmImportCustomers}
