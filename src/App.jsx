@@ -419,14 +419,24 @@ function useSupabaseTable(table, seed, idKey = "id") {
   const [synced, setSynced] = useState(!supabase);
   const seededRef = useRef(false);
   const lastJsonRef = useRef(null);
+  const lastMutationAtRef = useRef(0);
 
   useEffect(() => {
     if (!supabase) return;
     let active = true;
 
     const load = async () => {
+      // 記下這次輪詢「發出請求的時間點」。如果使用者在這個請求還沒回來之前，
+      // 又在本地做了新的新增/修改/刪除，這個請求回來時所帶的資料就已經是舊的了，
+      // 絕對不能拿來覆蓋掉使用者剛做的異動，否則畫面會看起來像「改了又自己復原」。
+      const requestStartedAt = Date.now();
       const { data: rows, error } = await supabase.from(table).select("*");
       if (!active) return;
+      if (requestStartedAt < lastMutationAtRef.current) {
+        // 這個請求是在最近一次本地異動「之前」發出的，回應已經過期，直接捨棄
+        setSynced(true);
+        return;
+      }
       if (error) {
         console.error(`[supabase] 讀取 ${table} 失敗`, error);
         setSynced(true);
@@ -439,19 +449,27 @@ function useSupabaseTable(table, seed, idKey = "id") {
           lastJsonRef.current = json;
           setDataState(mapped);
         }
-      } else if (!seededRef.current && seed && seed.length > 0) {
-        seededRef.current = true;
-        // 用資料庫端的 seed_meta 標記判斷「這張表是否曾經初始化過」，
-        // 而不是單純看表目前是不是空的——避免使用者故意清空資料後，
-        // 又被自動塞回種子資料。
-        const { data: metaRow, error: metaErr } = await supabase.from("seed_meta").select("*").eq("table_name", table).single();
-        if (!metaErr && !metaRow) {
-          const { error: insErr } = await supabase.from(table).insert(seed.map(toDbRow));
-          if (insErr) {
-            console.error(`[supabase] 初始化種子資料失敗 ${table}`, insErr);
-          } else {
-            const { error: markErr } = await supabase.from("seed_meta").insert([{ table_name: table }]);
-            if (markErr) console.error(`[supabase] 標記 seed_meta 失敗 ${table}`, markErr);
+      } else {
+        // 資料表目前真的是空的（可能是使用者自己清空，或其他裝置刪光了），
+        // 畫面也要正確反映成空，不能維持舊的快取資料一直顯示
+        if (lastJsonRef.current !== "[]") {
+          lastJsonRef.current = "[]";
+          setDataState([]);
+        }
+        if (!seededRef.current && seed && seed.length > 0) {
+          seededRef.current = true;
+          // 用資料庫端的 seed_meta 標記判斷「這張表是否曾經初始化過」，
+          // 而不是單純看表目前是不是空的——避免使用者故意清空資料後，
+          // 又被自動塞回種子資料。
+          const { data: metaRow, error: metaErr } = await supabase.from("seed_meta").select("*").eq("table_name", table).single();
+          if (!metaErr && !metaRow) {
+            const { error: insErr } = await supabase.from(table).insert(seed.map(toDbRow));
+            if (insErr) {
+              console.error(`[supabase] 初始化種子資料失敗 ${table}`, insErr);
+            } else {
+              const { error: markErr } = await supabase.from("seed_meta").insert([{ table_name: table }]);
+              if (markErr) console.error(`[supabase] 標記 seed_meta 失敗 ${table}`, markErr);
+            }
           }
         }
       }
@@ -472,9 +490,11 @@ function useSupabaseTable(table, seed, idKey = "id") {
     setDataState((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
       if (supabase) {
+        lastMutationAtRef.current = Date.now();
         lastJsonRef.current = JSON.stringify(next);
         syncTableDiff(table, prev, next, idKey).then((ok) => {
           if (!ok) {
+            lastMutationAtRef.current = Date.now();
             lastJsonRef.current = JSON.stringify(prev);
             setDataState(prev);
           }
