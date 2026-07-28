@@ -1227,7 +1227,7 @@ function ProductSearchSelect({ products, value, onChange, placeholder = "搜尋�
 }
 
 const CUSTOMER_TYPES = ["一般", "租賃", "一般+租賃"];
-const CUSTOMER_CSV_HEADERS = ["客戶名稱", "統一編號", "聯絡人", "電話", "市話", "傳真", "電子郵件", "LINE ID", "郵遞區號", "地址", "類型", "備註"];
+const CUSTOMER_CSV_HEADERS = ["客戶名稱", "統一編號", "發票抬頭", "聯絡人", "電話", "市話", "傳真", "電子郵件", "LINE ID", "郵遞區號", "地址", "類型", "備註"];
 
 // 可搜尋的客戶選擇器：value 為空字串時代表「現場客戶（不指定）」
 function CustomerSearchSelect({ customers, value, onChange, placeholder = "搜尋客戶名稱、聯絡人或電話" }) {
@@ -1308,7 +1308,7 @@ function CustomersTab({ customers, setCustomers }) {
   const [taxIdError, setTaxIdError] = useState("");
   const [importOpen, setImportOpen] = useState(false);
 
-  const openAdd = () => { setForm({ name: "", taxId: "", contact: "", phone: "", landline: "", fax: "", email: "", lineId: "", postalCode: "", address: "", type: "一般", note: "" }); setTaxIdError(""); setModal("add"); };
+  const openAdd = () => { setForm({ name: "", taxId: "", invoiceTitle: "", contact: "", phone: "", landline: "", fax: "", email: "", lineId: "", postalCode: "", address: "", type: "一般", note: "" }); setTaxIdError(""); setModal("add"); };
   const openEdit = (c) => { setForm(c); setTaxIdError(""); setModal("edit"); };
   const validateTaxId = (taxId, selfId) => {
     if (!taxId) return ""; // 非必填，留空直接通過
@@ -1335,6 +1335,7 @@ function CustomersTab({ customers, setCustomers }) {
     return data.map((raw) => {
       const name = (raw["客戶名稱"] || raw["name"] || "").trim();
       const taxId = (raw["統一編號"] || raw["taxId"] || "").toString().replace(/\D/g, "").slice(0, 8);
+      const invoiceTitle = (raw["發票抬頭"] || raw["invoiceTitle"] || "").trim();
       const contact = (raw["聯絡人"] || raw["contact"] || "").trim();
       const phone = (raw["電話"] || raw["phone"] || "").trim();
       const landline = (raw["市話"] || raw["landline"] || "").trim();
@@ -1356,13 +1357,13 @@ function CustomersTab({ customers, setCustomers }) {
         seenTaxIds.add(taxId);
       }
 
-      return { name, taxId, contact, phone, landline, fax, email, lineId, postalCode, address, note, type, errors, ok: errors.length === 0, include: errors.length === 0 };
+      return { name, taxId, invoiceTitle, contact, phone, landline, fax, email, lineId, postalCode, address, note, type, errors, ok: errors.length === 0, include: errors.length === 0 };
     });
   };
 
   const confirmImportCustomers = (toAdd) => {
     const newCustomers = toAdd.map((r) => ({
-      id: nextId("C"), name: r.name, taxId: r.taxId, contact: r.contact, phone: r.phone,
+      id: nextId("C"), name: r.name, taxId: r.taxId, invoiceTitle: r.invoiceTitle, contact: r.contact, phone: r.phone,
       landline: r.landline, fax: r.fax, email: r.email, lineId: r.lineId, postalCode: r.postalCode,
       address: r.address, note: r.note, type: r.type,
     }));
@@ -1435,6 +1436,14 @@ function CustomersTab({ customers, setCustomers }) {
             />
             {taxIdError && <div className="text-xs text-rose-500 mt-1">{taxIdError}</div>}
           </Field>
+          <Field label="發票抬頭">
+            <input
+              className={inputCls}
+              value={form.invoiceTitle || ""}
+              onChange={(e) => setForm({ ...form, invoiceTitle: e.target.value })}
+              placeholder="開立發票用的公司/個人抬頭，留空則預設用客戶名稱"
+            />
+          </Field>
           <Field label="聯絡人"><input className={inputCls} value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} /></Field>
           <Field label="電話"><input className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
           <Field label="市話"><input className={inputCls} value={form.landline || ""} onChange={(e) => setForm({ ...form, landline: e.target.value })} placeholder="例：02-1234-5678" /></Field>
@@ -1464,14 +1473,15 @@ function CustomersTab({ customers, setCustomers }) {
       {importOpen && (
         <CsvImportModal
           title="批次匯入客戶（CSV）"
-          hint={<>請使用 UTF-8 編碼的 CSV 檔案，欄位標題需包含：<b className="text-slate-700">客戶名稱、統一編號、聯絡人、電話、市話、傳真、電子郵件、LINE ID、郵遞區號、地址、類型、備註</b>。除「客戶名稱」外皆為選填；「統一編號」若有填寫則須為 8 碼數字且不可與現有客戶或檔案內其他列重複。</>}
+          hint={<>請使用 UTF-8 編碼的 CSV 檔案，欄位標題需包含：<b className="text-slate-700">客戶名稱、統一編號、發票抬頭、聯絡人、電話、市話、傳真、電子郵件、LINE ID、郵遞區號、地址、類型、備註</b>。除「客戶名稱」外皆為選填；「統一編號」若有填寫則須為 8 碼數字且不可與現有客戶或檔案內其他列重複；「發票抬頭」留空則開立發票時預設使用客戶名稱。</>}
           headers={CUSTOMER_CSV_HEADERS}
-          sampleRows={[["彩苑範例股份有限公司", "00000000", "陳先生", "02-1234-5678", "02-8765-4321", "02-8765-4322", "example@mail.com", "caiyuan_line", "220", "台北市中山區範例路1號", "一般", "備註內容"]]}
+          sampleRows={[["彩苑範例股份有限公司", "00000000", "彩苑範例股份有限公司", "陳先生", "02-1234-5678", "02-8765-4321", "02-8765-4322", "example@mail.com", "caiyuan_line", "220", "台北市中山區範例路1號", "一般", "備註內容"]]}
           templateFileName="客戶匯入範本.csv"
           normalizeRows={normalizeCustomerRows}
           previewCols={[
             { key: "name", label: "名稱" },
             { key: "taxId", label: "統一編號" },
+            { key: "invoiceTitle", label: "發票抬頭" },
             { key: "contact", label: "聯絡人" },
             { key: "phone", label: "電話" },
             { key: "email", label: "電子郵件" },
@@ -2227,7 +2237,7 @@ function ReceiptPreview({ sale, customer, prodName, onClose }) {
           <div className="text-sm space-y-1 mb-4">
             <div className="flex justify-between"><span className="text-slate-500">單號</span><span className="tabular-nums" style={{ fontFamily: "'IBM Plex Mono', monospace" }}>{sale.id}</span></div>
             <div className="flex justify-between"><span className="text-slate-500">日期時間</span><span>{sale.date} {sale.time}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">客戶</span><span>{customer ? customer.name : "現場客戶"}</span></div>
+            <div className="flex justify-between"><span className="text-slate-500">客戶</span><span>{customer ? (customer.invoiceTitle || customer.name) : "現場客戶"}</span></div>
             {customer?.taxId && <div className="flex justify-between"><span className="text-slate-500">統一編號</span><span>{customer.taxId}</span></div>}
             <div className="flex justify-between"><span className="text-slate-500">付款方式</span><span>{sale.paymentMethod}</span></div>
           </div>
@@ -2825,7 +2835,7 @@ function InvoicePreview({ data, onClose }) {
           <div className="grid grid-cols-2 gap-6 text-sm mb-6">
             <div className="space-y-1">
               <div className="font-semibold text-slate-700 mb-1">客戶資訊</div>
-              <div>客戶名稱：{customer?.name || "—"}</div>
+              <div>客戶名稱：{customer?.invoiceTitle || customer?.name || "—"}</div>
               <div>統一編號：{customer?.taxId || "—"}</div>
               <div>聯絡人：{customer?.contact || "—"}</div>
               <div>電話：{customer?.phone || "—"}</div>
