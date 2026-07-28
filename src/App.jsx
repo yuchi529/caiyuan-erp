@@ -441,8 +441,19 @@ function useSupabaseTable(table, seed, idKey = "id") {
         }
       } else if (!seededRef.current && seed && seed.length > 0) {
         seededRef.current = true;
-        const { error: insErr } = await supabase.from(table).insert(seed.map(toDbRow));
-        if (insErr) console.error(`[supabase] 初始化種子資料失敗 ${table}`, insErr);
+        // 用資料庫端的 seed_meta 標記判斷「這張表是否曾經初始化過」，
+        // 而不是單純看表目前是不是空的——避免使用者故意清空資料後，
+        // 又被自動塞回種子資料。
+        const { data: metaRow, error: metaErr } = await supabase.from("seed_meta").select("*").eq("table_name", table).single();
+        if (!metaErr && !metaRow) {
+          const { error: insErr } = await supabase.from(table).insert(seed.map(toDbRow));
+          if (insErr) {
+            console.error(`[supabase] 初始化種子資料失敗 ${table}`, insErr);
+          } else {
+            const { error: markErr } = await supabase.from("seed_meta").insert([{ table_name: table }]);
+            if (markErr) console.error(`[supabase] 標記 seed_meta 失敗 ${table}`, markErr);
+          }
+        }
       }
       setSynced(true);
     };
