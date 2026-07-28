@@ -386,9 +386,13 @@ async function syncTableDiff(table, prev, next, idKey) {
     if (error) {
       ok = false;
       console.error(`[supabase] 刪除 ${table} 失敗`, error);
-      alert(error.code === "42501" || /row-level security/i.test(error.message || "")
-        ? "刪除失敗：你的帳號權限不足（此操作僅限管理員），已還原畫面上的資料。"
-        : `刪除失敗：${error.message}（已還原畫面上的資料）`);
+      if (error.code === "42501" || /row-level security/i.test(error.message || "")) {
+        alert("刪除失敗：你的帳號權限不足（此操作僅限管理員），已還原畫面上的資料。");
+      } else if (error.code === "23503" || /foreign key/i.test(error.message || "")) {
+        alert("刪除失敗：這筆資料已被其他紀錄引用（例如銷售訂單、銷售單、租賃合約、應收帳款或採購單），無法直接刪除，已還原畫面上的資料。請先確認或清除相關關聯紀錄後再試一次。");
+      } else {
+        alert(`刪除失敗：${error.message}（已還原畫面上的資料）`);
+      }
     }
   }
   if (toUpsert.length) {
