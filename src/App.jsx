@@ -137,7 +137,10 @@ function createSupabaseLite(url, anonKey) {
         return {
           async in(col, values) {
             if (!values || values.length === 0) return { error: null };
-            const list = values.map((v) => `"${v}"`).join(",");
+            // 每個值都要先做 URL 編碼再包上引號，不然像「+」這種在 URL 查詢字串裡有特殊意義
+            // （會被解讀成空白）的字元，會讓 PostgREST 的篩選條件對不上任何一筆資料，
+            // 造成 DELETE 請求看似成功、但實際上什麼都沒刪到。
+            const list = values.map((v) => `"${encodeURIComponent(v)}"`).join(",");
             const res = await fetch(`${url}/rest/v1/${table}?${col}=in.(${list})`, {
               method: "DELETE",
               headers: { ...(await authHeaders()), Prefer: "return=minimal" },
